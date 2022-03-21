@@ -3,6 +3,7 @@ import { Button, Container, Stack, Col, Navbar } from 'react-bootstrap';
 import checkingWeb3Img from '../assets/checking_web3.png';
 import invalidChain from '../assets/invalid_chain.png';
 import ready from '../assets/ready.png';
+import gridSection from '../assets/grid_section.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMugHot, faPlus, faPhone } from '@fortawesome/free-solid-svg-icons';
 import { useWeb3React } from '@web3-react/core';
@@ -213,7 +214,7 @@ const HomeContainer = () => {
 
         </Stack>
         <Navbar expand="lg" fixed="bottom">
-          <img src="https://magic.link/images/landing-page-july-2021/conclusion-section/grid-section.png" style={{ width: "100%", height: "12rem", position: "absolute", bottom: "0rem", zIndex: "-5" }} alt="" />
+          <img src={gridSection} style={{ width: "100%", height: "12rem", position: "absolute", bottom: "0rem", zIndex: "-5" }} alt="" />
           <Container fluid className="justify-content-center">
             <h4>Developed with <FontAwesomeIcon icon={faMugHot} /> by <a href='https://yush.dev' rel="noreferrer" target="_blank">Aayush Sinha</a></h4>
           </Container>
