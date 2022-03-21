@@ -1,0 +1,23 @@
+.secondaryVideoContainer:hover .swapIconContainer {
+  background: rgba(33, 37, 41, 0.5) !important;
+  cursor: pointer;
+  z-index: 99;
+  opacity: 1 !important;
+}
+
+@keyframes MoveUpDown {
+  0%, 100% {
+    bottom: 3.5rem;
+  }
+  50% {
+    bottom: 2.5rem;
+  }
+}
+
+.modal {
+  z-index: 3055 !important;
+}
+
+iframe {
+  z-index: -100 !important;
+}
