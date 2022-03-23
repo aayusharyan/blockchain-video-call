@@ -6,18 +6,25 @@ import reportWebVitals from './reportWebVitals';
 import { BrowserRouter } from 'react-router-dom';
 import Web3 from 'web3';
 import { Web3ReactProvider } from '@web3-react/core';
+import { Provider } from 'react-redux';
+import { createStore } from 'redux';
+import rootReducer from './reducer';
 
 const getLibrary = (provider) => {
   return new Web3(provider);
 }
 
+const store = createStore(rootReducer);
+
 ReactDOM.render(
   <React.StrictMode>
+    <Provider store={store}>
     <Web3ReactProvider getLibrary={getLibrary}>
       <BrowserRouter>
         <App />
       </BrowserRouter>
     </Web3ReactProvider>
+    </Provider>
   </React.StrictMode>,
   document.getElementById('root')
 );

@@ -47,3 +47,74 @@ export const getNewStream = async (deviceId) => {
     throw new Error(err)
   }
 }
+
+export const servers = {
+  iceServers: [
+    {
+      urls: [
+        'stun:stun1.l.google.com:19302',
+        'stun:stun2.l.google.com:19302',
+      ],
+    },
+  ],
+  iceCandidatePoolSize: 10,
+}
+
+// let generateOffer = async (peerConnection, CandidateDBReference) => {
+//   pendingICEDetails = [];
+//   let documents = await CandidateDBReference.collection('offers').doc('pending').collection('details').get();
+//   documents.forEach((singleDoc) => {
+//       singleDoc.ref.delete();
+//   });
+//   await CandidateDBReference.collection('offers').doc('pending').delete();
+//   let myCandidateOfferDetails = CandidateDBReference.collection('offers').doc('pending').collection('details');
+  
+  
+  
+
+//   await CandidateDBReference.set(offer);
+// }
+
+// export const getICECandidates = () => {
+//   const peerConnection   = new RTCPeerConnection(servers);
+//   const iceCandidateList = array();
+//   let offerDescription   = await peerConnection.createOffer();
+//   await peerConnection.setLocalDescription(offerDescription);
+
+//   peerConnection.onicecandidate = (event) => {
+//     event.candidate && myCandidateOfferDetails.add(event.candidate.toJSON()) && iceCandidateList.push(event.candidate.toJSON());
+//   }
+
+//   const offer = {
+//       sdp: offerDescription.sdp,
+//       type: offerDescription.type
+//   };
+
+
+//   pendingPeerConnection = createPeerConnection();
+
+//   let callDoc = db.collection("offers").doc();
+//   let callID = callDoc.id;
+//   document.getElementById('call_id').value = callID;
+
+//   window.history.pushState('', "Call", `?call=${callID}`);
+
+//   let candidates = callDoc.collection('candidates');
+//   let myCandidate = candidates.doc();
+
+//   await generateOffer(pendingPeerConnection, myCandidate);
+
+//   listenForCandidates(candidates, myCandidate);
+// }
+
+// const createPeerConnection = () => {
+  
+//   localStream.getTracks().forEach((track) => {
+//     peerConnection.addTrack(track, localStream);
+//   });
+
+//   pendingdataChannel = peerConnection.createDataChannel("meta", {});
+//   console.log(pendingdataChannel);
+
+//   return peerConnection;
+// }

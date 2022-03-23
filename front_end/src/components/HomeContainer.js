@@ -4,22 +4,38 @@ import checkingWeb3Img from '../assets/checking_web3.png';
 import invalidChain from '../assets/invalid_chain.png';
 import ready from '../assets/ready.png';
 import gridSection from '../assets/grid_section.png';
+import metamaskLogo from '../assets/metamask.png';
+import walletConnectLogo from '../assets/walletconnect.ico';
+import coinbaseLogo from '../assets/coinbase.png';
+import ledgerLogo from '../assets/ledger.png';
+import trezorLogo from '../assets/trezor.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMugHot, faPlus, faPhone } from '@fortawesome/free-solid-svg-icons';
+import { faMugHot, faPlus, faPhone, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { useWeb3React } from '@web3-react/core';
 import { LedgerObj, MetaMaskObj, WalletConnectObj, WalletLinkObj } from '../functions/Web3';
-import { LOGIN_STATE_INVALID_CHAIN, LOGIN_STATE_LOGIN_SUCCESS, LOGIN_STATE_NO_LOGIN, ROPSTEN_CHAIN_ID, ROPSTEN_CHAIN_ID_HEX } from '../constants';
+import { LOGIN_STATE_INVALID_CHAIN, LOGIN_STATE_LOGIN_SUCCESS, LOGIN_STATE_NO_LOGIN, ROPSTEN_CHAIN_ID, ROPSTEN_CHAIN_ID_HEX, CONTRACT_ADDRESS, JOIN_STATUS_MAKING_CONNECTION, JOIN_STATUS_GENERATING_TRANSACTION, JOIN_STATUS_WAITING_FOR_MINT, JOIN_STATUS_REDIRECTING } from '../constants';
 import JoinCallModal from './JoinCallModal';
 import { useNavigate } from 'react-router-dom';
 import moment from 'moment';
+import contractMetadata from '../contractMetadata';
+import { ethers, Wallet } from 'ethers';
+import { useDispatch } from 'react-redux';
+import { setWallet } from '../actions';
+import JoiningCallModal from './JoiningCallModal';
+
+const provider = ethers.getDefaultProvider("ropsten");
 
 const HomeContainer = () => {
-  const [ loginState, setLoginState ] = useState(LOGIN_STATE_NO_LOGIN);
-  const { active, activate, chainId, error, account } = useWeb3React();
-  const [ joinCallModalShow, setJoinCallModalShow ] = useState(false);
-  const [ userAccount, setUserAccount ] = useState("");
-  const [ currentTime, setCurrentTime ] = useState(Date.now());
+  const [loginState, setLoginState] = useState(LOGIN_STATE_NO_LOGIN);
+  const { active, activate, chainId, error, account, library } = useWeb3React();
+  const [joinCallModalShow, setJoinCallModalShow] = useState(false);
+  const [userAccount, setUserAccount] = useState("");
+  const [secondaryUserAccount, setSecondaryUserAccount] = useState({});
+  const [currentTime, setCurrentTime] = useState(Date.now());
+  const [joiningCallModal, setJoiningCallModal] = useState(false);
+  const [joiningCallModalStatus, setJoiningCallModalStatus] = useState(JOIN_STATUS_MAKING_CONNECTION);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (error !== undefined) {
@@ -35,15 +51,20 @@ const HomeContainer = () => {
       }
     }
   }, [active, chainId, error]);
-  
+
   useEffect(() => {
-    if(account === undefined) {
+    if (account === undefined) {
       setLoginState(LOGIN_STATE_NO_LOGIN);
       setUserAccount("");
+      dispatch(setWallet(undefined));
     } else {
       setUserAccount(account);
+      const userWallet = new Wallet(account, provider);
+      setSecondaryUserAccount(userWallet);
+      dispatch(setWallet(userWallet));
+      console.log(userWallet);
     }
-  }, [account]);
+  }, [account, dispatch]);
 
   useEffect(() => {
     setTimeout(() => {
@@ -111,7 +132,41 @@ const HomeContainer = () => {
   }
 
   const newCall = () => {
-    navigate('/call/abcd');
+    setJoiningCallModal(true);
+    (async _ => {
+      return false;
+      try {
+        
+        console.log("Tx started");
+        const contract = new ethers.Contract(CONTRACT_ADDRESS, contractMetadata.output.abi, provider);
+        const contractWithSigner = contract.connect(secondaryUserAccount);
+
+        setJoiningCallModalStatus(JOIN_STATUS_GENERATING_TRANSACTION);
+        
+        const gasPrice = await provider.getFeeData();
+        console.log(gasPrice);
+
+        const transaction = await contractWithSigner.generateCall("", "", [["abcd", 101, "abcd", "abcd"]], {gasLimit: 350000, maxFeePerGas: gasPrice.maxFeePerGas.add(gasPrice.maxFeePerGas), maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas.add(gasPrice.maxPriorityFeePerGas) });
+        console.log(transaction);
+
+        setJoiningCallModalStatus(JOIN_STATUS_WAITING_FOR_MINT);
+        console.log("Waiting now");
+
+        const receipt = await transaction.wait();
+        setJoiningCallModalStatus(JOIN_STATUS_REDIRECTING);
+        const callId = receipt?.events[0]?.args?.callId;
+        const chunks = ['dpva'];
+        for (let i = 0; i < callId.length; i += 3) {
+          chunks.push(callId.substring(i, i + 3));
+        }
+        const callURL = chunks.join("-");
+        setTimeout(() => {
+          navigate(`/call/${callURL}`);
+        }, 1500)
+      } catch (e) {
+        console.log(e);
+      }
+    })();
   }
 
   const getLeftSide = () => {
@@ -121,13 +176,30 @@ const HomeContainer = () => {
           <>
             <h1>Checking web3 connectivity...</h1>
             <h6 className='mb-5'>A.K.A. Blockchain</h6>
-            <h3>Select your Provider</h3>
+            <h3>Select your Wallet</h3>
             <Stack direction='horizontal' gap={4} className='mt-5'>
-              <Button variant="outline-warning" onClick={connectToMetamask}>Metamask</Button>
-              <Button variant="outline-primary" onClick={connectToWalletConnect}>WalletConnect</Button>
-              <Button variant="outline-dark" onClick={connectToWalletLink}>Coinbase</Button>
-              <Button variant="outline-dark" onClick={connectToLedger}>Ledger</Button>
-              <Button variant="outline-dark" onClick={connectToWalletLink}>Trezor</Button>
+              <Button variant="outline-warning" onClick={connectToMetamask} style={{ display: "inherit", verticalAlign: "middle" }}>
+                <h5 className='mb-0 text-dark' style={{ lineHeight: "2rem" }}>Metamask</h5> &emsp;
+                <img src={metamaskLogo} alt="" style={{ height: "2rem" }} />
+              </Button>
+              <Button variant="outline-primary" onClick={connectToWalletConnect} style={{ display: "inherit", verticalAlign: "middle" }}>
+                <h5 className='mb-0 text-light' style={{ lineHeight: "2rem" }}>WalletConnect</h5> &emsp;
+                <img src={walletConnectLogo} alt="" style={{ height: "2rem" }} />
+              </Button>
+              <Button variant="outline-light" onClick={connectToWalletLink} style={{ display: "inherit", verticalAlign: "middle" }}>
+                <h5 className='mb-0 text-primary' style={{ lineHeight: "2rem" }}>Coinbase</h5> &emsp;
+                <img src={coinbaseLogo} alt="" style={{ height: "2rem" }} />
+              </Button>
+            </Stack>
+            <Stack direction='horizontal' gap={4} className='mt-5'>
+              <Button variant="outline-light" onClick={connectToLedger} style={{ display: "inherit", verticalAlign: "middle" }}>
+                <h5 className='mb-0 text-dark' style={{ lineHeight: "2rem" }}>Ledger</h5> &emsp;
+                <img src={ledgerLogo} alt="" style={{ height: "2rem" }} />
+              </Button>
+              <Button variant="outline-light" onClick={connectToWalletLink} style={{ display: "inherit", verticalAlign: "middle" }}>
+                <h5 className='mb-0 text-dark' style={{ lineHeight: "2rem" }}>Trezor</h5> &emsp;
+                <img src={trezorLogo} alt="" style={{ height: "2rem" }} />
+              </Button>
             </Stack>
           </>
         );
@@ -193,16 +265,17 @@ const HomeContainer = () => {
     const momentObj = moment(currentTime);
     return (
       <>
-        <span>{momentObj.hour()}</span>
+        <span>{(momentObj.hour() < 10) ? `0${momentObj.hour()}` : momentObj.hour()}</span>
         :
-        <span>{momentObj.minute()}</span>
+        <span>{(momentObj.minute() < 10) ? `0${momentObj.minute()}` : momentObj.minute()}</span>
       </>
     );
   }
 
   return (
     <>
-      <JoinCallModal show={joinCallModalShow} onHide={() => {setJoinCallModalShow(false)}} />
+      <JoinCallModal show={joinCallModalShow} onHide={() => setJoinCallModalShow(false)} />
+      <JoiningCallModal show={joiningCallModal} onHide={() => setJoiningCallModal(false)} status={joiningCallModalStatus} />
       <Container className='mt-5 pt-5'>
         <Stack direction='horizontal' className='mt-3' >
           <Col md="6" className='mt-5'>
