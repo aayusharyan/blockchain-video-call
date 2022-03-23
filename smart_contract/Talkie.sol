@@ -24,7 +24,10 @@ contract Talkie {
    
     struct Call {
         string key;
-        string sdp;
+        string offer_sdp;
+        string offer_type;
+        string answer_sdp;
+        string answer_type;
         address initiator_addr;
         address joinee_addr;
         ICECandidates[] initiator;
@@ -43,13 +46,14 @@ contract Talkie {
 
     event callLogs(address participant, string callId);
 
-    function generateCall(string calldata password, string calldata sdp) public {
+    function generateCall(string calldata password, string calldata o_sdp, string calldata o_type) public {
         randNonce++;
         uint32 callId = uint32(uint(keccak256(abi.encodePacked(block.timestamp, msg.sender, randNonce))) % 899999999) + 100000000;
         bytes calldata passwordBytes = bytes(password);
         if (passwordBytes.length == 0) {
             callList[callId].key = ENCRYPTION_KEY;
-            callList[callId].sdp = sdp;
+            callList[callId].offer_sdp = o_sdp;
+            callList[callId].offer_type = o_type;
             callList[callId].initiator_addr = msg.sender;
             emit callLogs(msg.sender, convertCallIdToCallURL(callId));
         } else {

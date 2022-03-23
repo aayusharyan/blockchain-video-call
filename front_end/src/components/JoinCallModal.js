@@ -19,6 +19,8 @@ const JoinCallModal = (props) => {
     if(callURL.length === 11) {
       callURL = `${CALL_URL_PREPEND_TEXT}-${callURL}`;
       navigate(`/call/${callURL}`);
+    } else {
+      setValidated(false);
     }
   }
 

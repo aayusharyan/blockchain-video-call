@@ -9,12 +9,16 @@ const CallCanvas = (props) => {
   const videoSwapIconRef = useRef(null);
 
   useEffect(() => {
-    console.log();
-    if (props.mediaStream.id !== undefined) {
-      primaryVideoRef.current.srcObject = props.mediaStream;
-      secondaryVideoRef.current.srcObject = props.mediaStream;
+    if (props.remoteMediaStream.id !== undefined) {
+      primaryVideoRef.current.srcObject = props.remoteMediaStream;
     }
-  }, [props.mediaStream]);
+  }, [props.remoteMediaStream]);
+
+  useEffect(() => {
+    if (props.localMediaStream.id !== undefined) {
+      secondaryVideoRef.current.srcObject = props.localMediaStream;
+    }
+  }, [props.localMediaStream]);
 
   const swapVideoFeeds = () => {
     primaryVideoRef.current.style.opacity = "0";
@@ -29,7 +33,6 @@ const CallCanvas = (props) => {
       const temp = primaryVideoRef.current.srcObject;
       primaryVideoRef.current.srcObject = secondaryVideoRef.current.srcObject;
       secondaryVideoRef.current.srcObject = temp;
-      
       primaryVideoRef.current.style.transform = "";
       secondaryVideoRef.current.style.transform = "";
       primaryVideoRef.current.style.filter = "";
@@ -50,9 +53,9 @@ const CallCanvas = (props) => {
           <video muted ref={primaryVideoRef} onLoadedMetadata={metadataLoaded} style={{ height: "100%", maxWidth: "100%", transition: "all 0.5s" }} />
           <div className='p-0 secondaryVideoContainer' style={{ position: "absolute", bottom: "1rem", right: "1rem", borderRadius: "1rem", maxWidth: "33%", maxHeight: "33%", overflow: "hidden", transition: "all 0.25s" }}>
             <Stack style={{ position: "absolute", top: "0px", left: "0px", width: "100%", height: "100%", transition: "all 0.25s", opacity: "0", background: "rgba(0,0,0,0)" }} className="justify-content-center swapIconContainer" onClick={swapVideoFeeds}>
-              <span  ref={videoSwapIconRef} style={{transition: "all 0.25s", transitionDelay: "0.25s"}}><FontAwesomeIcon icon={faArrowsRotate} className="fs-1 text-light" /></span>
+              <span ref={videoSwapIconRef} style={{ transition: "all 0.25s", transitionDelay: "0.25s" }}><FontAwesomeIcon icon={faArrowsRotate} className="fs-1 text-light" /></span>
             </Stack>
-            <video muted ref={secondaryVideoRef} onLoadedMetadata={metadataLoaded} style={{transition: "all 0.5s"}} />
+            <video muted ref={secondaryVideoRef} onLoadedMetadata={metadataLoaded} style={{ transition: "all 0.5s" }} />
           </div>
         </Container>
       </Container>

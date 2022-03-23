@@ -60,6 +60,22 @@ export const servers = {
   iceCandidatePoolSize: 10,
 }
 
+export const getNewPeerConnection = () => {
+  const peerConnection = new RTCPeerConnection(servers);
+  return peerConnection;
+}
+
+export const generateOffer = async (peerConnection) => {
+  let offerDescription   = await peerConnection.createOffer();
+  await peerConnection.setLocalDescription(offerDescription);
+
+  const offer = {
+    sdp: offerDescription.sdp,
+    type: offerDescription.type
+  };
+  return offer;
+}
+
 // let generateOffer = async (peerConnection, CandidateDBReference) => {
 //   pendingICEDetails = [];
 //   let documents = await CandidateDBReference.collection('offers').doc('pending').collection('details').get();
@@ -76,19 +92,7 @@ export const servers = {
 // }
 
 // export const getICECandidates = () => {
-//   const peerConnection   = new RTCPeerConnection(servers);
-//   const iceCandidateList = array();
-//   let offerDescription   = await peerConnection.createOffer();
-//   await peerConnection.setLocalDescription(offerDescription);
 
-//   peerConnection.onicecandidate = (event) => {
-//     event.candidate && myCandidateOfferDetails.add(event.candidate.toJSON()) && iceCandidateList.push(event.candidate.toJSON());
-//   }
-
-//   const offer = {
-//       sdp: offerDescription.sdp,
-//       type: offerDescription.type
-//   };
 
 
 //   pendingPeerConnection = createPeerConnection();

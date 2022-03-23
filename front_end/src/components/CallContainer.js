@@ -9,13 +9,15 @@ import ChatContainer from './ChatContainer';
 const CallContainer = () => {
   const [isChatVisible, setChatVisible] = useState(false);
   const [alertDetails, setAlertDetails] = useState({});
-  const [mediaStream, setMediaStream] = useState({});
+  const [localStream, setLocalStream] = useState({});
+  const [remoteStream, setRemoteStream] = useState({});
 
   useEffect(() => {
     (async () => {
       try {
-        const mediaStream = await getMediaStream();
-        setMediaStream(mediaStream);
+        const localStream = await getMediaStream();
+        setLocalStream(localStream);
+        setRemoteStream(localStream);
       } catch (e) {
         setAlertDetails({
           variant: "danger",
@@ -41,8 +43,8 @@ const CallContainer = () => {
                 </Alert>
               ) : false}
 
-              <CallCanvas mediaStream={mediaStream} style={{ height: Object.keys(alertDetails).length > 0 ? "calc(100% - 10.5rem)" : "calc(100% - 6rem)" }} />
-              <CallBottomNav toggleChatVisibility={toggleChatVisibility} chatVisibility={isChatVisible} mediaStream={mediaStream} />
+              <CallCanvas localMediaStream={localStream} remoteMediaStream={remoteStream} style={{ height: Object.keys(alertDetails).length > 0 ? "calc(100% - 10.5rem)" : "calc(100% - 6rem)" }} />
+              <CallBottomNav toggleChatVisibility={toggleChatVisibility} chatVisibility={isChatVisible} mediaStream={localStream} />
             </Card.Body>
           </Card>
         </div>

@@ -20,8 +20,9 @@ import moment from 'moment';
 import contractMetadata from '../contractMetadata';
 import { ethers, Wallet } from 'ethers';
 import { useDispatch } from 'react-redux';
-import { setWallet } from '../actions';
+import { setPeerConnection, setWallet } from '../actions';
 import JoiningCallModal from './JoiningCallModal';
+import { generateOffer, getNewPeerConnection } from '../functions/Call';
 
 const provider = ethers.getDefaultProvider("ropsten", { infura: INFURA_PROJECT_ID, etherscan: ETHERSCAN_API_KEY });
 
@@ -136,20 +137,19 @@ const HomeContainer = () => {
     (async _ => {
       try {
 
-        console.log("Tx started");
+        const peerConnection = getNewPeerConnection();
+        dispatch(setPeerConnection(peerConnection));
+        const offerDetails = await generateOffer(peerConnection);
+
         const contract = new ethers.Contract(CONTRACT_ADDRESS, contractMetadata.output.abi, provider);
         const contractWithSigner = contract.connect(secondaryUserAccount);
 
         setJoiningCallModalStatus(JOIN_STATUS_GENERATING_TRANSACTION);
 
-        const gasPrice = await provider.getFeeData();
-        console.log(gasPrice);
-
-        const transaction = await contractWithSigner.generateCall("", "", [["abcd", 101, "abcd", "abcd"]], { gasLimit: 350000, maxFeePerGas: gasPrice.maxFeePerGas.add(gasPrice.maxFeePerGas), maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas.add(gasPrice.maxPriorityFeePerGas) });
-        console.log(transaction);
+        const gasPrice    = await provider.getFeeData();
+        const transaction = await contractWithSigner.generateCall("", offerDetails.sdp, offerDetails.type, { gasLimit: 350000, maxFeePerGas: gasPrice.maxFeePerGas.add(gasPrice.maxFeePerGas), maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas.add(gasPrice.maxPriorityFeePerGas) });
 
         setJoiningCallModalStatus(JOIN_STATUS_WAITING_FOR_MINT);
-        console.log("Waiting now");
 
         const receipt = await transaction.wait();
         setJoiningCallModalStatus(JOIN_STATUS_REDIRECTING);

@@ -45,7 +45,12 @@ const contractMetadata = {
 					},
 					{
 						"internalType": "string",
-						"name": "sdp",
+						"name": "o_sdp",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "o_type",
 						"type": "string"
 					}
 				],
@@ -73,7 +78,12 @@ const contractMetadata = {
 							},
 							{
 								"internalType": "string",
-								"name": "sdp",
+								"name": "offer_sdp",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "offer_type",
 								"type": "string"
 							},
 							{
@@ -300,11 +310,11 @@ const contractMetadata = {
 	},
 	"sources": {
 		"Talkie.sol": {
-			"keccak256": "0xe28014fd1faab5beee3f67e4709f4d23d474e0df5ebecfefbbaf4f5d984590ff",
+			"keccak256": "0x233ba857d7fcc5162ba2a69426b40286edf30ecc21d5b5d3968438ad760b942e",
 			"license": "GPL-3.0",
 			"urls": [
-				"bzz-raw://8d5306f8a92dad4f6a889f8bdaf160e77f715ece2107fae1a9225649b39eaae0",
-				"dweb:/ipfs/QmR87V3H8tjYpmtau26cY2JDAj1qdFbgSFy2FYsU1CQwUJ"
+				"bzz-raw://f5c9d56fe57903b13e40f80afc52a1ca97d92ca57ceec1e2eafc2eb67801ce1e",
+				"dweb:/ipfs/QmNv45rprbDcrLcsDDizqwDu4EH4WessffdJUw6TDQq5gc"
 			]
 		}
 	},
