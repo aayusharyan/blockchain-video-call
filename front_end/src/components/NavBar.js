@@ -47,7 +47,7 @@ const NavBar = () => {
               className="d-inline-block align-top"
             />{' '}
             <h3 style={{ display: "inline" }}>
-              <strong>Decentralized Peer-to-Peer Video Calling App</strong>
+              <strong>Talkie</strong>
             </h3>
           </Navbar.Brand>
         </Link>
