@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import 'bootswatch/dist/morph/bootstrap.min.css';
-import { Navbar, Container, Button, Tooltip, OverlayTrigger } from 'react-bootstrap';
+import { Navbar, Container, Button, Tooltip, OverlayTrigger, Stack } from 'react-bootstrap';
 import logo from '../assets/logo.svg';
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { utils } from 'ethers';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEthereum } from '@fortawesome/free-brands-svg-icons';
+import { faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 import { useWeb3React } from '@web3-react/core';
 
 const renderTooltip = (props) => (
@@ -52,6 +53,7 @@ const NavBar = () => {
           </Navbar.Brand>
         </Link>
         {newAccount !== undefined ? (
+          <Stack direction='horizontal' gap={3}>
           <OverlayTrigger
             placement="bottom"
             delay={{ show: 50, hide: 400 }}
@@ -59,6 +61,8 @@ const NavBar = () => {
           >
             <Button variant='outline-primary' onClick={loadWallet}>{balance} <FontAwesomeIcon icon={faEthereum} /></Button>
           </OverlayTrigger>
+          <Button>Logout <FontAwesomeIcon icon={faSignOutAlt} /></Button>
+          </Stack>
         ) : false}
       </Container>
     </Navbar>

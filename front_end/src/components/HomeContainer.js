@@ -13,7 +13,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMugHot, faPlus, faPhone } from '@fortawesome/free-solid-svg-icons';
 import { useWeb3React } from '@web3-react/core';
 import { LedgerObj, MetaMaskObj, WalletConnectObj, WalletLinkObj } from '../functions/Web3';
-import { LOGIN_STATE_INVALID_CHAIN, LOGIN_STATE_LOGIN_SUCCESS, LOGIN_STATE_NO_LOGIN, ROPSTEN_CHAIN_ID, ROPSTEN_CHAIN_ID_HEX, CONTRACT_ADDRESS, JOIN_STATUS_MAKING_CONNECTION, JOIN_STATUS_GENERATING_TRANSACTION, JOIN_STATUS_WAITING_FOR_MINT, JOIN_STATUS_REDIRECTING, INFURA_PROJECT_ID, ETHERSCAN_API_KEY, CALL_URL_PREPEND_TEXT } from '../constants';
+import { LOGIN_STATE_INVALID_CHAIN, LOGIN_STATE_LOGIN_SUCCESS, LOGIN_STATE_NO_LOGIN, ROPSTEN_CHAIN_ID, ROPSTEN_CHAIN_ID_HEX, CONTRACT_ADDRESS, JOIN_STATUS_MAKING_CONNECTION, JOIN_STATUS_GENERATING_TRANSACTION, JOIN_STATUS_WAITING_FOR_MINT, JOIN_STATUS_REDIRECTING, INFURA_PROJECT_ID, ETHERSCAN_API_KEY, CALL_URL_PREPEND_TEXT, WALLET_METAMASK, WALLET_WALLETCONNECT, WALLET_COINBASE, WALLET_LEDGER } from '../constants';
 import JoinCallModal from './JoinCallModal';
 import { useNavigate } from 'react-router-dom';
 import moment from 'moment';
@@ -35,6 +35,7 @@ const HomeContainer = () => {
   const [currentTime, setCurrentTime] = useState(Date.now());
   const [joiningCallModal, setJoiningCallModal] = useState(false);
   const [joiningCallModalStatus, setJoiningCallModalStatus] = useState(JOIN_STATUS_MAKING_CONNECTION);
+  const [connectedWalletType, setConnectedWalletType] = useState(""); 
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -58,6 +59,7 @@ const HomeContainer = () => {
       setLoginState(LOGIN_STATE_NO_LOGIN);
       setUserAccount("");
       dispatch(setWallet(undefined));
+      setConnectedWalletType("");
     } else {
       setUserAccount(account);
       const userWallet = new Wallet(account, provider);
@@ -78,6 +80,7 @@ const HomeContainer = () => {
     (async () => {
       try {
         await activate(MetaMaskObj);
+        setConnectedWalletType(WALLET_METAMASK);
       } catch (e) {
         console.log(e);
       }
@@ -88,6 +91,7 @@ const HomeContainer = () => {
     (async () => {
       try {
         await activate(WalletConnectObj);
+        setConnectedWalletType(WALLET_WALLETCONNECT);
       } catch (e) {
         console.log(e);
       }
@@ -98,6 +102,7 @@ const HomeContainer = () => {
     (async () => {
       try {
         await activate(WalletLinkObj);
+        setConnectedWalletType(WALLET_COINBASE);
       } catch (e) {
         console.log(e);
       }
@@ -108,6 +113,7 @@ const HomeContainer = () => {
     (async () => {
       try {
         await activate(LedgerObj);
+        setConnectedWalletType(WALLET_LEDGER);
       } catch (e) {
         console.log(e);
       }
@@ -195,7 +201,7 @@ const HomeContainer = () => {
                 <h5 className='mb-0 text-dark' style={{ lineHeight: "2rem" }}>Ledger</h5> &emsp;
                 <img src={ledgerLogo} alt="" style={{ height: "2rem" }} />
               </Button>
-              <Button variant="outline-light" onClick={connectToWalletLink} style={{ display: "inherit", verticalAlign: "middle" }}>
+              <Button variant="outline-light" style={{ display: "inherit", verticalAlign: "middle" }}>
                 <h5 className='mb-0 text-dark' style={{ lineHeight: "2rem" }}>Trezor</h5> &emsp;
                 <img src={trezorLogo} alt="" style={{ height: "2rem" }} />
               </Button>
@@ -220,7 +226,12 @@ const HomeContainer = () => {
             <h1>Good... One last step</h1>
             <h2 className='pb-5'>We need Ropsten Chain to work</h2>
             <Stack direction='horizontal' gap={4} className='mt-5'>
-              <Button variant="outline-primary" onClick={switchNetworkToRopsten}>Switch Network</Button>
+              {connectedWalletType === WALLET_METAMASK ? (
+                <Button variant="outline-primary" onClick={switchNetworkToRopsten}>Switch Network</Button>
+              ) : (
+                <h5>Please change in the app.</h5>
+              )}
+              
             </Stack>
           </>
         );
