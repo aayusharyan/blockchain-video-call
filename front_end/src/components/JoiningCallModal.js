@@ -44,7 +44,7 @@ const JoiningCallModal = (props) => {
       </Modal.Header>
       <Modal.Body>
         <h4>{getStatusText()}</h4>
-        <ProgressBar striped variant="success" now={getPercent()} animated style={{ height: "0.75rem" }} />
+        <ProgressBar striped variant="primary" now={getPercent()} animated style={{ height: "0.75rem" }} />
       </Modal.Body>
       <Modal.Footer>
       </Modal.Footer>

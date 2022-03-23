@@ -5,7 +5,7 @@ export const LOGIN_STATE_NO_WEB3        = 4;
 
 export const ROPSTEN_CHAIN_ID = 3;
 export const ROPSTEN_CHAIN_ID_HEX = "0x3";
-export const CONTRACT_ADDRESS = "0x5526f5d377f9ccc8acf71e654ada94088b926e08";
+export const CONTRACT_ADDRESS = "0xfb7a33024715fc0d65e1eb27d54dc9540aa2ae39";
 
 export const ACTION_TYPE_SET_ACCOUNT = "ACTION_TYPE_SET_ACCOUNT";
 
@@ -16,3 +16,5 @@ export const JOIN_STATUS_REDIRECTING            = "JOIN_STATUS_REDIRECTING";
 
 export const INFURA_PROJECT_ID = "26dfca216da64ee6b000483ab57de5f6";
 export const ETHERSCAN_API_KEY = "XDCWQ2BPR9FH8H39RQU9E8CNMVRS225VS9";
+
+export const CALL_URL_PREPEND_TEXT = "tyd";

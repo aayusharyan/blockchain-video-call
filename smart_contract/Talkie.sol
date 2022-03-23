@@ -43,14 +43,36 @@ contract Talkie {
 
     event callLogs(address participant, string callId);
 
-    function generateCall(string calldata password, string calldata sdp, ICECandidates[] calldata iceDetails) public {
+    function generateCall(string calldata password, string calldata sdp) public {
         randNonce++;
         uint32 callId = uint32(uint(keccak256(abi.encodePacked(block.timestamp, msg.sender, randNonce))) % 899999999) + 100000000;
         bytes calldata passwordBytes = bytes(password);
         if (passwordBytes.length == 0) {
             callList[callId].key = ENCRYPTION_KEY;
             callList[callId].sdp = sdp;
-            callList[callId].initiator.push(iceDetails[0]);
+            callList[callId].initiator_addr = msg.sender;
+            emit callLogs(msg.sender, convertCallIdToCallURL(callId));
+        } else {
+            emit callLogs(msg.sender, "WILL ENCRYPT");
+        }
+    }
+
+    function updateICECandidates(bytes calldata callURL, string calldata password, ICECandidates[] calldata iceDetails) public {
+        bytes calldata passwordBytes = bytes(password);
+        uint32 callId = convertCallURLToCallId(callURL);
+        
+        if (passwordBytes.length == 0) {
+            if(callList[callId].initiator_addr == msg.sender) {
+                delete callList[callId].initiator;
+                for (uint i = 0; i < iceDetails.length; i++) {
+                    callList[callId].initiator.push(iceDetails[i]);
+                }
+            } else {
+                delete callList[callId].joinee;
+                for (uint i = 0; i < iceDetails.length; i++) {
+                    callList[callId].joinee.push(iceDetails[i]);
+                }
+            }
             emit callLogs(msg.sender, convertCallIdToCallURL(callId));
         } else {
             emit callLogs(msg.sender, "WILL ENCRYPT");

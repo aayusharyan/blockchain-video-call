@@ -13,7 +13,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMugHot, faPlus, faPhone } from '@fortawesome/free-solid-svg-icons';
 import { useWeb3React } from '@web3-react/core';
 import { LedgerObj, MetaMaskObj, WalletConnectObj, WalletLinkObj } from '../functions/Web3';
-import { LOGIN_STATE_INVALID_CHAIN, LOGIN_STATE_LOGIN_SUCCESS, LOGIN_STATE_NO_LOGIN, ROPSTEN_CHAIN_ID, ROPSTEN_CHAIN_ID_HEX, CONTRACT_ADDRESS, JOIN_STATUS_MAKING_CONNECTION, JOIN_STATUS_GENERATING_TRANSACTION, JOIN_STATUS_WAITING_FOR_MINT, JOIN_STATUS_REDIRECTING, INFURA_PROJECT_ID, ETHERSCAN_API_KEY } from '../constants';
+import { LOGIN_STATE_INVALID_CHAIN, LOGIN_STATE_LOGIN_SUCCESS, LOGIN_STATE_NO_LOGIN, ROPSTEN_CHAIN_ID, ROPSTEN_CHAIN_ID_HEX, CONTRACT_ADDRESS, JOIN_STATUS_MAKING_CONNECTION, JOIN_STATUS_GENERATING_TRANSACTION, JOIN_STATUS_WAITING_FOR_MINT, JOIN_STATUS_REDIRECTING, INFURA_PROJECT_ID, ETHERSCAN_API_KEY, CALL_URL_PREPEND_TEXT } from '../constants';
 import JoinCallModal from './JoinCallModal';
 import { useNavigate } from 'react-router-dom';
 import moment from 'moment';
@@ -154,7 +154,7 @@ const HomeContainer = () => {
         const receipt = await transaction.wait();
         setJoiningCallModalStatus(JOIN_STATUS_REDIRECTING);
         const callId = receipt?.events[0]?.args?.callId;
-        const chunks = ['dpva'];
+        const chunks = [CALL_URL_PREPEND_TEXT];
         for (let i = 0; i < callId.length; i += 3) {
           chunks.push(callId.substring(i, i + 3));
         }

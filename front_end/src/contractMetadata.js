@@ -47,33 +47,6 @@ const contractMetadata = {
 						"internalType": "string",
 						"name": "sdp",
 						"type": "string"
-					},
-					{
-						"components": [
-							{
-								"internalType": "string",
-								"name": "candidate",
-								"type": "string"
-							},
-							{
-								"internalType": "uint8",
-								"name": "sdpMLineIndex",
-								"type": "uint8"
-							},
-							{
-								"internalType": "string",
-								"name": "sdpMid",
-								"type": "string"
-							},
-							{
-								"internalType": "string",
-								"name": "usernameFragment",
-								"type": "string"
-							}
-						],
-						"internalType": "struct Talkie.ICECandidates[]",
-						"name": "iceDetails",
-						"type": "tuple[]"
 					}
 				],
 				"name": "generateCall",
@@ -102,6 +75,16 @@ const contractMetadata = {
 								"internalType": "string",
 								"name": "sdp",
 								"type": "string"
+							},
+							{
+								"internalType": "address",
+								"name": "initiator_addr",
+								"type": "address"
+							},
+							{
+								"internalType": "address",
+								"name": "joinee_addr",
+								"type": "address"
 							},
 							{
 								"components": [
@@ -242,6 +225,51 @@ const contractMetadata = {
 				],
 				"stateMutability": "view",
 				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "bytes",
+						"name": "callURL",
+						"type": "bytes"
+					},
+					{
+						"internalType": "string",
+						"name": "password",
+						"type": "string"
+					},
+					{
+						"components": [
+							{
+								"internalType": "string",
+								"name": "candidate",
+								"type": "string"
+							},
+							{
+								"internalType": "uint8",
+								"name": "sdpMLineIndex",
+								"type": "uint8"
+							},
+							{
+								"internalType": "string",
+								"name": "sdpMid",
+								"type": "string"
+							},
+							{
+								"internalType": "string",
+								"name": "usernameFragment",
+								"type": "string"
+							}
+						],
+						"internalType": "struct Talkie.ICECandidates[]",
+						"name": "iceDetails",
+						"type": "tuple[]"
+					}
+				],
+				"name": "updateICECandidates",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
 			}
 		],
 		"devdoc": {
@@ -257,7 +285,7 @@ const contractMetadata = {
 	},
 	"settings": {
 		"compilationTarget": {
-			"Contract.sol": "Talkie"
+			"Talkie.sol": "Talkie"
 		},
 		"evmVersion": "london",
 		"libraries": {},
@@ -271,12 +299,12 @@ const contractMetadata = {
 		"remappings": []
 	},
 	"sources": {
-		"Contract.sol": {
-			"keccak256": "0x9da7171ae1d47e00f35cbefa40f6b8abc3ad44d52979870016567085cbc7dc0a",
+		"Talkie.sol": {
+			"keccak256": "0xe28014fd1faab5beee3f67e4709f4d23d474e0df5ebecfefbbaf4f5d984590ff",
 			"license": "GPL-3.0",
 			"urls": [
-				"bzz-raw://9a5342f4896dddc6abbf669a4f000f5a512cd72c7475030b2a097300fa230fb2",
-				"dweb:/ipfs/QmfAho7kgMZciZdk9h74HzK1RMqvzP7HYxES2ZqduWxVRJ"
+				"bzz-raw://8d5306f8a92dad4f6a889f8bdaf160e77f715ece2107fae1a9225649b39eaae0",
+				"dweb:/ipfs/QmR87V3H8tjYpmtau26cY2JDAj1qdFbgSFy2FYsU1CQwUJ"
 			]
 		}
 	},
