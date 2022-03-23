@@ -23,7 +23,7 @@ import { useDispatch } from 'react-redux';
 import { setWallet } from '../actions';
 import JoiningCallModal from './JoiningCallModal';
 
-const provider = ethers.getDefaultProvider("ropsten", {infura: INFURA_PROJECT_ID, etherscan: ETHERSCAN_API_KEY});
+const provider = ethers.getDefaultProvider("ropsten", { infura: INFURA_PROJECT_ID, etherscan: ETHERSCAN_API_KEY });
 
 const HomeContainer = () => {
   const [loginState, setLoginState] = useState(LOGIN_STATE_NO_LOGIN);
@@ -135,17 +135,17 @@ const HomeContainer = () => {
     setJoiningCallModal(true);
     (async _ => {
       try {
-        
+
         console.log("Tx started");
         const contract = new ethers.Contract(CONTRACT_ADDRESS, contractMetadata.output.abi, provider);
         const contractWithSigner = contract.connect(secondaryUserAccount);
 
         setJoiningCallModalStatus(JOIN_STATUS_GENERATING_TRANSACTION);
-        
+
         const gasPrice = await provider.getFeeData();
         console.log(gasPrice);
 
-        const transaction = await contractWithSigner.generateCall("", "", [["abcd", 101, "abcd", "abcd"]], {gasLimit: 350000, maxFeePerGas: gasPrice.maxFeePerGas.add(gasPrice.maxFeePerGas), maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas.add(gasPrice.maxPriorityFeePerGas) });
+        const transaction = await contractWithSigner.generateCall("", "", [["abcd", 101, "abcd", "abcd"]], { gasLimit: 350000, maxFeePerGas: gasPrice.maxFeePerGas.add(gasPrice.maxFeePerGas), maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas.add(gasPrice.maxPriorityFeePerGas) });
         console.log(transaction);
 
         setJoiningCallModalStatus(JOIN_STATUS_WAITING_FOR_MINT);
@@ -275,16 +275,18 @@ const HomeContainer = () => {
     <>
       <JoinCallModal show={joinCallModalShow} onHide={() => setJoinCallModalShow(false)} />
       <JoiningCallModal show={joiningCallModal} onHide={() => setJoiningCallModal(false)} status={joiningCallModalStatus} />
-      <Container className='mt-5 pt-5'>
-        <Stack direction='horizontal' className='mt-3' >
-          <Col md="6" className='mt-5'>
-            {getLeftSide()}
-          </Col>
-          <Col md="6" className='mt-5'>
-            {getRightSide()}
-          </Col>
+      <Container>
+        <Container style={{ position: "fixed", top: "50vh", transform: "translateY(-50%)", display: "initial" }}>
+          <Stack direction='horizontal' >
+            <Col md="6">
+              {getLeftSide()}
+            </Col>
+            <Col md="6">
+              {getRightSide()}
+            </Col>
 
-        </Stack>
+          </Stack>
+        </Container>
         <Navbar expand="lg" fixed="bottom">
           <img src={gridSection} style={{ width: "100%", height: "12rem", position: "absolute", bottom: "0rem", zIndex: "-5" }} alt="" />
           <Container fluid className="justify-content-center">
