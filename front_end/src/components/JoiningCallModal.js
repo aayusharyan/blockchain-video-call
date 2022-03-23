@@ -1,4 +1,4 @@
-import { Button, Modal, ProgressBar } from "react-bootstrap";
+import { Modal, ProgressBar } from "react-bootstrap";
 import { JOIN_STATUS_MAKING_CONNECTION, JOIN_STATUS_GENERATING_TRANSACTION, JOIN_STATUS_WAITING_FOR_MINT, JOIN_STATUS_REDIRECTING } from "../constants";
 
 const JoiningCallModal = (props) => {
@@ -47,7 +47,6 @@ const JoiningCallModal = (props) => {
         <ProgressBar striped variant="success" now={getPercent()} animated style={{ height: "0.75rem" }} />
       </Modal.Body>
       <Modal.Footer>
-        
       </Modal.Footer>
     </Modal>
   );

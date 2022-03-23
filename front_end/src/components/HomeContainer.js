@@ -10,7 +10,7 @@ import coinbaseLogo from '../assets/coinbase.png';
 import ledgerLogo from '../assets/ledger.png';
 import trezorLogo from '../assets/trezor.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMugHot, faPlus, faPhone, faSearch } from '@fortawesome/free-solid-svg-icons';
+import { faMugHot, faPlus, faPhone } from '@fortawesome/free-solid-svg-icons';
 import { useWeb3React } from '@web3-react/core';
 import { LedgerObj, MetaMaskObj, WalletConnectObj, WalletLinkObj } from '../functions/Web3';
 import { LOGIN_STATE_INVALID_CHAIN, LOGIN_STATE_LOGIN_SUCCESS, LOGIN_STATE_NO_LOGIN, ROPSTEN_CHAIN_ID, ROPSTEN_CHAIN_ID_HEX, CONTRACT_ADDRESS, JOIN_STATUS_MAKING_CONNECTION, JOIN_STATUS_GENERATING_TRANSACTION, JOIN_STATUS_WAITING_FOR_MINT, JOIN_STATUS_REDIRECTING } from '../constants';
@@ -27,7 +27,7 @@ const provider = ethers.getDefaultProvider("ropsten");
 
 const HomeContainer = () => {
   const [loginState, setLoginState] = useState(LOGIN_STATE_NO_LOGIN);
-  const { active, activate, chainId, error, account, library } = useWeb3React();
+  const { active, activate, chainId, error, account } = useWeb3React();
   const [joinCallModalShow, setJoinCallModalShow] = useState(false);
   const [userAccount, setUserAccount] = useState("");
   const [secondaryUserAccount, setSecondaryUserAccount] = useState({});
@@ -134,7 +134,6 @@ const HomeContainer = () => {
   const newCall = () => {
     setJoiningCallModal(true);
     (async _ => {
-      return false;
       try {
         
         console.log("Tx started");
