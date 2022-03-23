@@ -77,7 +77,7 @@ const HomeContainer = () => {
 
   useEffect(() => {
     dispatch(setWalletProvider(connectedWalletType));
-  }, [connectedWalletType])
+  }, [connectedWalletType, dispatch])
 
   console.log(useWeb3React());
   const connectToMetamask = () => {
