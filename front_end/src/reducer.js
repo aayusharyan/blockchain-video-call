@@ -1,7 +1,8 @@
-import { ACTION_TYPE_SET_ACCOUNT, ACTION_TYPE_SET_PEER_CONNECTON } from "./constants";
+import { ACTION_TYPE_SET_ACCOUNT, ACTION_TYPE_SET_PEER_CONNECTON, ACTION_TYPE_SET_WALLET_PROVIDER } from "./constants";
 
 const initialState = {
   wallet: undefined,
+  walletProvider: "",
   peerConnection: undefined,
   localStream: undefined,
   remoteStream: undefined,
@@ -14,6 +15,9 @@ const rootReducer = (currentState = initialState, action) => {
       break;
     case ACTION_TYPE_SET_PEER_CONNECTON:
       currentState.peerConnection = action.payload;
+      break;
+    case ACTION_TYPE_SET_WALLET_PROVIDER:
+      currentState.walletProvider = action.payload;
       break;
     default:
       break;

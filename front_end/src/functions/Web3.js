@@ -17,11 +17,11 @@ export const WalletConnectObj = new WalletConnectConnector({
 
 export const WalletLinkObj = new WalletLinkConnector({
   url: `https://ropsten.infura.io/v3/${INFURA_PROJECT_ID}`,
-  appName: "talkie",
-  supportedChainIds: [1, 3, 4, 5, 42],
+  appName: "Talkie",
+  supportedChainIds: [ROPSTEN_CHAIN_ID],
 });
 
 export const LedgerObj = new LedgerConnector({
   url: `https://ropsten.infura.io/v3/${INFURA_PROJECT_ID}`,
-  supportedChainIds: [1, 3, 4, 5, 42],
+  chainId: ROPSTEN_CHAIN_ID,
 });

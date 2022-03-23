@@ -11,7 +11,7 @@ function App() {
     <>
       <Helmet>
         <meta charSet="utf-8" />
-        <title>Decentralized Peer-to-Peer Video Calling App | Aayush Sinha</title>
+        <title>Talkie | Decentralized Peer-to-Peer Video Calling App | Aayush Sinha</title>
         <link rel="canonical" href="http://mysite.com/example" />
       </Helmet>
       <NavBar />

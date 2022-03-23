@@ -9,6 +9,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEthereum } from '@fortawesome/free-brands-svg-icons';
 import { faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 import { useWeb3React } from '@web3-react/core';
+import { WALLET_COINBASE, WALLET_LEDGER, WALLET_METAMASK, WALLET_TREZOR, WALLET_WALLETCONNECT } from '../constants';
+import { LedgerObj, MetaMaskObj, WalletConnectObj, WalletLinkObj } from '../functions/Web3';
 
 const renderTooltip = (props) => (
   <Tooltip id="button-tooltip" {...props}>
@@ -17,8 +19,9 @@ const renderTooltip = (props) => (
 );
 
 const NavBar = () => {
-  const { account, library } = useWeb3React();
+  const { account, library, deactivate } = useWeb3React();
   const newAccount = useSelector((state) => state.wallet);
+  const walletProvider = useSelector((state) => state.walletProvider);
   const [balance, setBalance] = useState(0);
   useEffect(() => {
     (async () => {
@@ -33,6 +36,27 @@ const NavBar = () => {
 
   const loadWallet = () => {
     library.eth.sendTransaction({from: account, to: newAccount.address, value: 100000000000000000});
+  }
+
+  const logout = () => {
+    switch(walletProvider) {
+      case WALLET_METAMASK:
+        deactivate(MetaMaskObj);
+        break;
+      case WALLET_WALLETCONNECT:
+        deactivate(WalletConnectObj);
+        break;
+      case WALLET_COINBASE:
+        deactivate(WalletLinkObj);
+        break;
+      case WALLET_LEDGER:
+        deactivate(LedgerObj);
+        break;
+      case WALLET_TREZOR:
+        break;
+      default:
+        break;
+    }
   }
 
   return (
@@ -61,7 +85,7 @@ const NavBar = () => {
           >
             <Button variant='outline-primary' onClick={loadWallet}>{balance} <FontAwesomeIcon icon={faEthereum} /></Button>
           </OverlayTrigger>
-          <Button>Logout <FontAwesomeIcon icon={faSignOutAlt} /></Button>
+          <Button onClick={logout}>Logout <FontAwesomeIcon icon={faSignOutAlt} /></Button>
           </Stack>
         ) : false}
       </Container>

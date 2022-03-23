@@ -20,7 +20,7 @@ import moment from 'moment';
 import contractMetadata from '../contractMetadata';
 import { ethers, Wallet } from 'ethers';
 import { useDispatch } from 'react-redux';
-import { setPeerConnection, setWallet } from '../actions';
+import { setPeerConnection, setWallet, setWalletProvider } from '../actions';
 import JoiningCallModal from './JoiningCallModal';
 import { generateOffer, getNewPeerConnection } from '../functions/Call';
 
@@ -74,6 +74,10 @@ const HomeContainer = () => {
       setCurrentTime(Date.now());
     }, 50 * 1000);
   }, [currentTime]);
+
+  useEffect(() => {
+    dispatch(setWalletProvider(connectedWalletType));
+  }, [connectedWalletType])
 
   console.log(useWeb3React());
   const connectToMetamask = () => {
