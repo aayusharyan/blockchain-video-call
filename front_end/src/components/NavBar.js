@@ -70,6 +70,7 @@ const NavBar = () => {
               width="30"
               height="30"
               className="d-inline-block align-top"
+              style={{marginTop: "3px"}}
             />{' '}
             <h3 style={{ display: "inline" }}>
               <strong>Talkie</strong>
