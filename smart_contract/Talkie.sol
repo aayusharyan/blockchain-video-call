@@ -11,17 +11,13 @@ pragma solidity >=0.7.0 <0.9.0;
 
 contract Talkie {
 
-    struct ICECandidates {
+    struct ICECandidate {
         string candidate;
         uint8 sdpMLineIndex;
         string sdpMid;
         string usernameFragment;
     }
 
-    struct Participant {
-        ICECandidates[] connectionDetails;
-    }
-   
     struct Call {
         string key;
         string offer_sdp;
@@ -30,8 +26,8 @@ contract Talkie {
         string answer_type;
         address initiator_addr;
         address joinee_addr;
-        ICECandidates[] initiator;
-        ICECandidates[] joinee;
+        ICECandidate[] initiator;
+        ICECandidate[] joinee;
     }
 
     mapping (uint32 => Call) private callList;
@@ -45,78 +41,70 @@ contract Talkie {
     }
 
     event callLogs(address participant, string callId);
+    event ICEUpdated(string CallURL);
 
-    function generateCall(string calldata password, string calldata o_sdp, string calldata o_type) public {
+    //Generate the call and return new Call URL.
+    function generateCall(string calldata o_sdp, string calldata o_type) public {
         randNonce++;
         uint32 callId = uint32(uint(keccak256(abi.encodePacked(block.timestamp, msg.sender, randNonce))) % 899999999) + 100000000;
-        bytes calldata passwordBytes = bytes(password);
-        if (passwordBytes.length == 0) {
-            callList[callId].key = ENCRYPTION_KEY;
-            callList[callId].offer_sdp = o_sdp;
-            callList[callId].offer_type = o_type;
-            callList[callId].initiator_addr = msg.sender;
-            emit callLogs(msg.sender, convertCallIdToCallURL(callId));
-        } else {
-            emit callLogs(msg.sender, "WILL ENCRYPT");
-        }
+
+        //Check if Call ID Exists already, then generate a new one.
+            
+        callList[callId].key            = ENCRYPTION_KEY;
+        callList[callId].offer_sdp      = o_sdp;
+        callList[callId].offer_type     = o_type;
+        callList[callId].initiator_addr = msg.sender;
+        emit callLogs(msg.sender, convertCallIdToCallURL(callId));
     }
 
-    function updateICECandidates(bytes calldata callURL, string calldata password, ICECandidates[] calldata iceDetails) public {
-        bytes calldata passwordBytes = bytes(password);
+    //Add new ICECandidate to a call
+    function addICECandidate(bytes calldata callURL, ICECandidate calldata iceDetails) public {
         uint32 callId = convertCallURLToCallId(callURL);
-        
-        if (passwordBytes.length == 0) {
-            if(callList[callId].initiator_addr == msg.sender) {
-                delete callList[callId].initiator;
-                for (uint i = 0; i < iceDetails.length; i++) {
-                    callList[callId].initiator.push(iceDetails[i]);
-                }
-            } else {
-                delete callList[callId].joinee;
-                for (uint i = 0; i < iceDetails.length; i++) {
-                    callList[callId].joinee.push(iceDetails[i]);
-                }
-            }
-            emit callLogs(msg.sender, convertCallIdToCallURL(callId));
+
+        if(callList[callId].initiator_addr == msg.sender) {
+            callList[callId].initiator.push(iceDetails);
         } else {
-            emit callLogs(msg.sender, "WILL ENCRYPT");
+            callList[callId].joinee.push(iceDetails);
         }
+
+        emit ICEUpdated(convertCallIdToCallURL(callId));
     }
 
-    function getCallDetails(string calldata callURL) public view returns(Call memory) {
-        bytes calldata callURLBytes = bytes(callURL);
-        return callList[convertCallURLToCallId(callURLBytes)];
+    //Get the call details.
+    function getCallDetails(bytes calldata callURL) public view returns(Call memory) {
+        return callList[convertCallURLToCallId(callURL)];
     }
 
-    function isPasswordNeeded(string calldata callURL) public view returns(bool) {
-        string memory key = getCallDetails(callURL).key;
+    //Join Call
+    function joinCall(bytes calldata callURL, string calldata a_sdp, string calldata a_type) public {
+        uint32 callId = convertCallURLToCallId(callURL);
 
-        if(compareStrings(key, ENCRYPTION_KEY)) {
-            return false;
-        }
-        return true;
-    }
-
-    function joinCall(string calldata callURL, string calldata password, ICECandidates[] calldata iceDetails) public {
-        bytes calldata passwordBytes = bytes(password);
-        if (passwordBytes.length == 0) {
-            callList[convertCallURLToCallId(bytes(callURL))].joinee.push(iceDetails[0]);
-            emit callLogs(msg.sender, callURL);
+        if(msg.sender == callList[callId].initiator_addr) {
+            callList[callId].offer_sdp      = a_sdp;
+            callList[callId].offer_type     = a_type;
+            callList[callId].initiator_addr = msg.sender;
         } else {
-            emit callLogs(msg.sender, "WILL ENCRYPT");
+            callList[callId].answer_sdp     = a_sdp;
+            callList[callId].answer_type    = a_type;
+            callList[callId].joinee_addr    = msg.sender;
         }
+
+            
+        emit callLogs(msg.sender, convertCallIdToCallURL(callId));
     }
 
+    //Convert Call ID Number to Call URL String
     function convertCallIdToCallURL(uint32 callId) internal pure returns(string memory) {
         string memory callURL = "";
         while (callId != 0) {
             uint8 singleNumber = uint8(callId % 10);
-            callId = callId / 10;
+            callId  = callId / 10;
             callURL = concat(convertIntToChar(singleNumber), callURL);
         }
         return callURL;
     }
 
+    //Convert Call URL String to Call ID Number
     function convertCallURLToCallId(bytes calldata callURL) internal pure returns (uint32) {
         uint32 callId = 0;
         uint8 i=0;

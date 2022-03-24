@@ -41,7 +41,7 @@ const JoinCallModal = (props) => {
         <Modal.Body>
 
           <InputGroup className="mb-3">
-            <InputGroup.Text style={{ paddingRight: "0px" }}>${CALL_URL_PREPEND_TEXT}-</InputGroup.Text>
+            <InputGroup.Text style={{ paddingRight: "0px" }}>{CALL_URL_PREPEND_TEXT}-</InputGroup.Text>
             <input ref={inputRef} type="text" className='form-control' aria-label="First name" autoFocus />
             <Form.Control.Feedback type="invalid">
               Please provide a valid ID.
