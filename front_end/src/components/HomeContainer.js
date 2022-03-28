@@ -154,7 +154,7 @@ const HomeContainer = () => {
         setJoiningCallModalStatus(JOIN_STATUS_GENERATING_TRANSACTION);
 
         const gasPrice    = await provider.getFeeData();
-        const transaction = await contractWithSigner.generateCall(offerDetails.sdp, offerDetails.type, { gasLimit: 350000, maxFeePerGas: gasPrice.maxFeePerGas.add(gasPrice.maxFeePerGas), maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas.add(gasPrice.maxPriorityFeePerGas).add(gasPrice.maxPriorityFeePerGas).add(gasPrice.maxPriorityFeePerGas) });
+        const transaction = await contractWithSigner.generateCall(offerDetails.sdp, offerDetails.type, { gasLimit: 350000, maxFeePerGas: gasPrice.maxFeePerGas.add(gasPrice.maxFeePerGas).add(gasPrice.maxFeePerGas).add(gasPrice.maxFeePerGas), maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas.add(gasPrice.maxPriorityFeePerGas).add(gasPrice.maxPriorityFeePerGas) });
         console.log(transaction);
         setJoiningCallModalStatus(JOIN_STATUS_WAITING_FOR_MINT);
 

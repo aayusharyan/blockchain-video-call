@@ -66,7 +66,7 @@ const CallContainer = () => {
           ];
           console.log(iceDetails);
 
-          await contractWithSigner.addICECandidate(utils.toUtf8Bytes(callURLForWeb3), iceDetails, { gasLimit: 350000, maxFeePerGas: gasPrice.maxFeePerGas.add(gasPrice.maxFeePerGas), maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas.add(gasPrice.maxPriorityFeePerGas).add(gasPrice.maxPriorityFeePerGas).add(gasPrice.maxPriorityFeePerGas) });
+          await contractWithSigner.addICECandidate(utils.toUtf8Bytes(callURLForWeb3), iceDetails, { gasLimit: 350000, maxFeePerGas: gasPrice.maxFeePerGas.add(gasPrice.maxFeePerGas).add(gasPrice.maxFeePerGas).add(gasPrice.maxFeePerGas).add(gasPrice.maxFeePerGas), maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas.add(gasPrice.maxPriorityFeePerGas).add(gasPrice.maxPriorityFeePerGas) });
         })();
         // (async () => {
         //   console.log(event.candidate.toJSON());
@@ -144,7 +144,7 @@ const CallContainer = () => {
         if (callDetails.initiator_addr === userAccount.address) {
           const offerDetails = await generateOffer(peerConnection);
           peerConnection.setLocalDescription(offerDetails);
-          const transaction = await contractWithSigner.joinCall(utils.toUtf8Bytes(callURLForWeb3), offerDetails.sdp, offerDetails.type, { gasLimit: 350000, maxFeePerGas: gasPrice.maxFeePerGas.add(gasPrice.maxFeePerGas), maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas.add(gasPrice.maxPriorityFeePerGas).add(gasPrice.maxPriorityFeePerGas).add(gasPrice.maxPriorityFeePerGas) });
+          const transaction = await contractWithSigner.joinCall(utils.toUtf8Bytes(callURLForWeb3), offerDetails.sdp, offerDetails.type, { gasLimit: 350000, maxFeePerGas: gasPrice.maxFeePerGas.add(gasPrice.maxFeePerGas).add(gasPrice.maxFeePerGas).add(gasPrice.maxFeePerGas), maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas.add(gasPrice.maxPriorityFeePerGas).add(gasPrice.maxPriorityFeePerGas) });
           console.log(transaction);
 
           const receipt = await transaction.wait();
@@ -160,7 +160,7 @@ const CallContainer = () => {
             peerConnection.setRemoteDescription(remoteOffer);
             const answerDetails = await peerConnection.createAnswer();
             peerConnection.setLocalDescription(answerDetails);
-            const transaction = await contractWithSigner.joinCall(utils.toUtf8Bytes(callURLForWeb3), answerDetails.sdp, answerDetails.type, { gasLimit: 350000, maxFeePerGas: gasPrice.maxFeePerGas.add(gasPrice.maxFeePerGas), maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas.add(gasPrice.maxPriorityFeePerGas).add(gasPrice.maxPriorityFeePerGas).add(gasPrice.maxPriorityFeePerGas) });
+            const transaction = await contractWithSigner.joinCall(utils.toUtf8Bytes(callURLForWeb3), answerDetails.sdp, answerDetails.type, { gasLimit: 350000, maxFeePerGas: gasPrice.maxFeePerGas.add(gasPrice.maxFeePerGas).add(gasPrice.maxFeePerGas).add(gasPrice.maxFeePerGas), maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas.add(gasPrice.maxPriorityFeePerGas).add(gasPrice.maxPriorityFeePerGas) });
             console.log(transaction);
 
             const receipt = await transaction.wait();
