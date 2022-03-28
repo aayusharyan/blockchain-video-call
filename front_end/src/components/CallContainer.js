@@ -63,7 +63,7 @@ const CallContainer = () => {
             const callDetails = await contractWithSigner.getCallDetails(utils.toUtf8Bytes(callURLForWeb3));
             console.log(peerConnection);
             if (callDetails.initiator_addr === userAccount.address) {
-              if (callDetails.answer_type !== "") {
+              if (callDetails.offer_type !== "") {
                 const remoteOffer = {
                   sdp: callDetails.offer_sdp,
                   type: callDetails.offer_type
