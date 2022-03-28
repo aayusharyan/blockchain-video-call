@@ -13,7 +13,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMugHot, faPlus, faPhone } from '@fortawesome/free-solid-svg-icons';
 import { useWeb3React } from '@web3-react/core';
 import { LedgerObj, MetaMaskObj, WalletConnectObj, WalletLinkObj } from '../functions/Web3';
-import { LOGIN_STATE_INVALID_CHAIN, LOGIN_STATE_LOGIN_SUCCESS, LOGIN_STATE_NO_LOGIN, ROPSTEN_CHAIN_ID, ROPSTEN_CHAIN_ID_HEX, CONTRACT_ADDRESS, JOIN_STATUS_MAKING_CONNECTION, JOIN_STATUS_GENERATING_TRANSACTION, JOIN_STATUS_WAITING_FOR_MINT, JOIN_STATUS_REDIRECTING, INFURA_PROJECT_ID, ETHERSCAN_API_KEY, CALL_URL_PREPEND_TEXT, WALLET_METAMASK, WALLET_WALLETCONNECT, WALLET_COINBASE, WALLET_LEDGER } from '../constants';
+import { LOGIN_STATE_INVALID_CHAIN, LOGIN_STATE_LOGIN_SUCCESS, LOGIN_STATE_NO_LOGIN, ROPSTEN_CHAIN_ID, ROPSTEN_CHAIN_ID_HEX, CONTRACT_ADDRESS, JOIN_STATUS_MAKING_CONNECTION, JOIN_STATUS_GENERATING_TRANSACTION, JOIN_STATUS_WAITING_FOR_MINT, JOIN_STATUS_REDIRECTING, CALL_URL_PREPEND_TEXT, WALLET_METAMASK, WALLET_WALLETCONNECT, WALLET_COINBASE, WALLET_LEDGER } from '../constants';
 import JoinCallModal from './JoinCallModal';
 import { useNavigate } from 'react-router-dom';
 import moment from 'moment';
@@ -23,8 +23,7 @@ import { useDispatch } from 'react-redux';
 import { setPeerConnection, setWallet, setWalletProvider } from '../actions';
 import JoiningCallModal from './JoiningCallModal';
 import { generateOffer, getNewPeerConnection } from '../functions/Call';
-
-const provider = ethers.getDefaultProvider("ropsten", { infura: INFURA_PROJECT_ID, etherscan: ETHERSCAN_API_KEY });
+import { provider } from '../functions/Web3';
 
 const HomeContainer = () => {
   const [loginState, setLoginState] = useState(LOGIN_STATE_NO_LOGIN);
@@ -157,18 +156,18 @@ const HomeContainer = () => {
         setJoiningCallModalStatus(JOIN_STATUS_GENERATING_TRANSACTION);
 
         const gasPrice    = await provider.getFeeData();
-        const transaction = await contractWithSigner.generateCall("", offerDetails.sdp, offerDetails.type, { gasLimit: 350000, maxFeePerGas: gasPrice.maxFeePerGas.add(gasPrice.maxFeePerGas), maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas.add(gasPrice.maxPriorityFeePerGas) });
+        const transaction = await contractWithSigner.generateCall(offerDetails.sdp, offerDetails.type, { gasLimit: 350000, maxFeePerGas: gasPrice.maxFeePerGas.add(gasPrice.maxFeePerGas), maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas.add(gasPrice.maxPriorityFeePerGas) });
         console.log(transaction);
         setJoiningCallModalStatus(JOIN_STATUS_WAITING_FOR_MINT);
 
         const receipt = await transaction.wait();
         setJoiningCallModalStatus(JOIN_STATUS_REDIRECTING);
-        const callId = receipt?.events[0]?.args?.callId;
+        let callURL = receipt?.events[0]?.args?.callURL;
         const chunks = [CALL_URL_PREPEND_TEXT];
-        for (let i = 0; i < callId.length; i += 3) {
-          chunks.push(callId.substring(i, i + 3));
+        for (let i = 0; i < callURL.length; i += 3) {
+          chunks.push(callURL.substring(i, i + 3));
         }
-        const callURL = chunks.join("-");
+        callURL = chunks.join("-");
         setTimeout(() => {
           navigate(`/call/${callURL}`);
         }, 1500)

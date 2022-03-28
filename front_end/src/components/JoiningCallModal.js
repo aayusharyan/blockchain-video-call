@@ -4,6 +4,7 @@ import { JOIN_STATUS_MAKING_CONNECTION, JOIN_STATUS_GENERATING_TRANSACTION, JOIN
 
 const JoiningCallModal = (props) => {
   const [percent, setPercent] = useState(0);
+  const [intervalId, setIntervalId] = useState(0);
 
   const getStatusText = () => {
     switch(props.status) {
@@ -20,10 +21,17 @@ const JoiningCallModal = (props) => {
     }
   }
   useEffect(() => {
-    setInterval(() => {
-      setPercent((old) => old + 0.5);
-    }, 1000);
-  }, [])
+    if(props.show && intervalId !== 0) {
+      return;
+    }
+    clearInterval(intervalId);
+    if(props.show) {
+      const intervalId = setInterval(() => {
+        setPercent((old) => old + 0.5);
+      }, 1000);
+      setIntervalId(intervalId);
+    }    
+  }, [props.show, intervalId])
 
   useEffect(() => {
     switch(props.status) {

@@ -40,7 +40,7 @@ contract Talkie {
         owner = payable(msg.sender);
     }
 
-    event callLogs(address participant, string callId);
+    event callLogs(address participant, string callURL);
     event ICEUpdated(string CallURL);
 
     //Generate the call and return new Call URL.

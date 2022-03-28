@@ -5,7 +5,7 @@ export const LOGIN_STATE_NO_WEB3        = 4;
 
 export const ROPSTEN_CHAIN_ID = 3;
 export const ROPSTEN_CHAIN_ID_HEX = "0x3";
-export const CONTRACT_ADDRESS = "0xcfebc39469789262ca667252b13c7b8391243244";
+export const CONTRACT_ADDRESS = "0xacb8da85429d51c772aef2a457f2e10078975835";
 
 export const ACTION_TYPE_SET_ACCOUNT          = "ACTION_TYPE_SET_ACCOUNT";
 export const ACTION_TYPE_SET_PEER_CONNECTON   = "ACTION_TYPE_SET_PEER_CONNECTION";
@@ -26,3 +26,5 @@ export const WALLET_WALLETCONNECT = "WALLET_WALLETCONNECT";
 export const WALLET_COINBASE      = "WALLET_COINBASE";
 export const WALLET_LEDGER        = "WALLET_LEDGER";
 export const WALLET_TREZOR        = "WALLET_TREZOR";
+
+export const WEB3_CALL_REGEX = /tyd-[b-j][a-j]{2}(-[a-j]{3}){2}/gi;

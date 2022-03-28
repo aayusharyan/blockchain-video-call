@@ -4,6 +4,14 @@ import { getMediaStream } from '../functions/Call';
 import CallBottomNav from './CallBottomNav';
 import CallCanvas from './CallCanvas';
 import ChatContainer from './ChatContainer';
+import { provider } from '../functions/Web3';
+import { ethers, utils } from 'ethers';
+import { CONTRACT_ADDRESS, WEB3_CALL_REGEX } from '../constants';
+import contractMetadata from '../contractMetadata';
+import { useParams, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { getNewPeerConnection, generateOffer } from '../functions/Call';
+import { setPeerConnection } from '../actions';
 
 
 const CallContainer = () => {
@@ -11,21 +19,85 @@ const CallContainer = () => {
   const [alertDetails, setAlertDetails] = useState({});
   const [localStream, setLocalStream] = useState({});
   const [remoteStream, setRemoteStream] = useState({});
+  const { callURL } = useParams();
+  const navigate = useNavigate();
+  const peerConnection = useSelector((state) => state.peerConnection);
+  const [callURLForWeb3, setCallURLForWeb3] = useState("");
+  const dispatch = useDispatch();
+  const userAccount = useSelector((state) => state.wallet);
+
+  useEffect(() => {
+    if (!callURL.match(WEB3_CALL_REGEX)) {
+      navigate('/');
+    }
+    const callURLComponents = callURL.split("-");
+    const newCallURLForWeb3 = `${callURLComponents[1]}${callURLComponents[2]}${callURLComponents[3]}`.toLocaleLowerCase();
+    setCallURLForWeb3(newCallURLForWeb3);
+  }, [callURL, navigate]);
 
   useEffect(() => {
     (async () => {
+      if (userAccount === undefined) {
+        return;
+      }
+      if (peerConnection === undefined) {
+        const newPeerConnection = getNewPeerConnection();
+        dispatch(setPeerConnection(newPeerConnection));
+        return;
+      }
+
+      console.log(userAccount);
+
       try {
         const localStream = await getMediaStream();
         setLocalStream(localStream);
         setRemoteStream(localStream);
+
+        const offerDetails = await generateOffer(peerConnection);
+        const contract = new ethers.Contract(CONTRACT_ADDRESS, contractMetadata.output.abi, provider);
+        const contractWithSigner = contract.connect(userAccount);
+
+        const gasPrice = await provider.getFeeData();
+        const transaction = await contractWithSigner.joinCall(utils.toUtf8Bytes(callURLForWeb3), offerDetails.sdp, offerDetails.type, { gasLimit: 350000, maxFeePerGas: gasPrice.maxFeePerGas.add(gasPrice.maxFeePerGas), maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas.add(gasPrice.maxPriorityFeePerGas) });
+        console.log(transaction);
+
+        const receipt = await transaction.wait();
+
+        peerConnection.onicecandidate = (event) => {
+          (async () => {
+            console.log(event.candidate.toJSON());
+          })();
+        }
+        const filter = {
+          address: CONTRACT_ADDRESS,
+          topics: [
+            // the name of the event, parnetheses containing the data type of each event, no spaces
+            utils.id("ICEUpdated(string)"),
+            utils.id("callLogs(address, string)"),
+          ]
+        };
+        provider.on(filter, (log, event) => {
+          console.log(log);
+          console.log(event);
+          // do whatever you want here
+          // I'm pretty sure this returns a promise, so don't forget to resolve it
+        })
+        console.log(receipt);
+
       } catch (e) {
+        console.log(e);
         setAlertDetails({
           variant: "danger",
           text: "Permissions denied, please try again"
         });
       }
+
+
+
+      // dispatch(setPeerConnection(peerConnection));
+      console.log(peerConnection);
     })();
-  }, [])
+  }, [peerConnection, userAccount, callURLForWeb3, dispatch]);
 
   const toggleChatVisibility = () => {
     setChatVisible(chatVisibility => !chatVisibility);
