@@ -37,7 +37,7 @@ const CallContainer = () => {
 
   useEffect(() => {
     (async () => {
-      if (userAccount === undefined) {
+      if (userAccount === undefined || callURLForWeb3 === "") {
         return;
       }
       if (peerConnection === undefined) {
@@ -46,7 +46,7 @@ const CallContainer = () => {
         return;
       }
 
-      console.log(userAccount);
+      console.log(peerConnection, userAccount, callURLForWeb3, dispatch);
 
       try {
         const localStream = await getMediaStream();
