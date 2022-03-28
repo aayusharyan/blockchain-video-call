@@ -56,26 +56,28 @@ const CallContainer = () => {
           address: CONTRACT_ADDRESS,
         };
         provider.on(filter, (log, event) => {
-          (async(log, event) => {
+          (async (log, event) => {
             const contract = new ethers.Contract(CONTRACT_ADDRESS, contractMetadata.output.abi, provider);
             const contractWithSigner = contract.connect(userAccount);
-  
+
             const callDetails = await contractWithSigner.getCallDetails(utils.toUtf8Bytes(callURLForWeb3));
             console.log(callDetails);
             if (callDetails.initiator_addr === userAccount.address) {
-              if(callDetails.answer_type !== "") {
+              if (callDetails.answer_type !== "") {
                 const remoteOffer = {
                   sdp: callDetails.offer_sdp,
                   type: callDetails.offer_type
                 };
                 peerConnection.setRemoteDescription(remoteOffer);
-              }            
+              }
             } else {
-              const remoteOffer = {
-                sdp: callDetails.answer_sdp,
-                type: callDetails.answer_type
-              };
-              peerConnection.setRemoteDescription(remoteOffer);
+              if (callDetails.answer_type !== "") {
+                const remoteOffer = {
+                  sdp: callDetails.answer_sdp,
+                  type: callDetails.answer_type
+                };
+                peerConnection.setRemoteDescription(remoteOffer);
+              }
             }
           })(log, event);
         });
@@ -107,19 +109,21 @@ const CallContainer = () => {
 
           console.log(receipt);
         } else {
-          const remoteOffer = {
-            sdp: callDetails.offer_sdp,
-            type: callDetails.offer_type
-          };
-          peerConnection.setRemoteDescription(remoteOffer);
-          const answerDetails = await peerConnection.createAnswer();
-          peerConnection.setLocalDescription(answerDetails);
-          const transaction = await contractWithSigner.joinCall(utils.toUtf8Bytes(callURLForWeb3), answerDetails.sdp, answerDetails.type, { gasLimit: 350000, maxFeePerGas: gasPrice.maxFeePerGas.add(gasPrice.maxFeePerGas), maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas.add(gasPrice.maxPriorityFeePerGas) });
-          console.log(transaction);
+          if (callDetails.offer_type !== "") {
+            const remoteOffer = {
+              sdp: callDetails.offer_sdp,
+              type: callDetails.offer_type
+            };
+            peerConnection.setRemoteDescription(remoteOffer);
+            const answerDetails = await peerConnection.createAnswer();
+            peerConnection.setLocalDescription(answerDetails);
+            const transaction = await contractWithSigner.joinCall(utils.toUtf8Bytes(callURLForWeb3), answerDetails.sdp, answerDetails.type, { gasLimit: 350000, maxFeePerGas: gasPrice.maxFeePerGas.add(gasPrice.maxFeePerGas), maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas.add(gasPrice.maxPriorityFeePerGas) });
+            console.log(transaction);
 
-          const receipt = await transaction.wait();
+            const receipt = await transaction.wait();
 
-          console.log(receipt);
+            console.log(receipt);
+          }
         }
 
         setAlertDetails({
