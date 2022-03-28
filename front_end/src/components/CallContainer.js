@@ -37,6 +37,11 @@ const CallContainer = () => {
 
   useEffect(() => {
     (async () => {
+      setAlertDetails({
+        variant: "warning",
+        text: "Waiting for Participant..."
+      });
+
       if (userAccount === undefined || callURLForWeb3 === "") {
         return;
       }
@@ -49,25 +54,6 @@ const CallContainer = () => {
       console.log(peerConnection, userAccount, callURLForWeb3, dispatch);
 
       try {
-        const localStream = await getMediaStream();
-        setLocalStream(localStream);
-        setRemoteStream(localStream);
-
-        const offerDetails = await generateOffer(peerConnection);
-        const contract = new ethers.Contract(CONTRACT_ADDRESS, contractMetadata.output.abi, provider);
-        const contractWithSigner = contract.connect(userAccount);
-
-        const gasPrice = await provider.getFeeData();
-        const transaction = await contractWithSigner.joinCall(utils.toUtf8Bytes(callURLForWeb3), offerDetails.sdp, offerDetails.type, { gasLimit: 350000, maxFeePerGas: gasPrice.maxFeePerGas.add(gasPrice.maxFeePerGas), maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas.add(gasPrice.maxPriorityFeePerGas) });
-        console.log(transaction);
-
-        const receipt = await transaction.wait();
-
-        peerConnection.onicecandidate = (event) => {
-          (async () => {
-            console.log(event.candidate.toJSON());
-          })();
-        }
         const filter = {
           address: CONTRACT_ADDRESS,
           topics: [
@@ -81,8 +67,52 @@ const CallContainer = () => {
           console.log(event);
           // do whatever you want here
           // I'm pretty sure this returns a promise, so don't forget to resolve it
-        })
-        console.log(receipt);
+        });
+
+        const localStream = await getMediaStream();
+        setLocalStream(localStream);
+        setRemoteStream(localStream);
+
+        
+        const contract = new ethers.Contract(CONTRACT_ADDRESS, contractMetadata.output.abi, provider);
+        const contractWithSigner = contract.connect(userAccount);
+
+        const callDetails = await contractWithSigner.getCallDetails(utils.toUtf8Bytes(callURLForWeb3));
+        const gasPrice = await provider.getFeeData();
+        
+        if(callDetails.initiator_addr !== userAccount.address) {
+          const offerDetails = await generateOffer(peerConnection);
+          peerConnection.setLocalDescription(offerDetails);
+          const transaction = await contractWithSigner.joinCall(utils.toUtf8Bytes(callURLForWeb3), offerDetails.sdp, offerDetails.type, { gasLimit: 350000, maxFeePerGas: gasPrice.maxFeePerGas.add(gasPrice.maxFeePerGas), maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas.add(gasPrice.maxPriorityFeePerGas) });
+          console.log(transaction);
+
+          const receipt = await transaction.wait();
+          
+          console.log(receipt);
+        } else {
+          peerConnection.setRemoteDescription(callDetails.offer_sdp);
+          const answerDetails = await peerConnection.createAnswer();
+          peerConnection.setLocalDescription(answerDetails);
+          const transaction = await contractWithSigner.joinCall(utils.toUtf8Bytes(callURLForWeb3), answerDetails.sdp, answerDetails.type, { gasLimit: 350000, maxFeePerGas: gasPrice.maxFeePerGas.add(gasPrice.maxFeePerGas), maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas.add(gasPrice.maxPriorityFeePerGas) });
+          console.log(transaction);
+
+          const receipt = await transaction.wait();
+          
+          console.log(receipt);
+        }
+
+        
+
+        peerConnection.onicecandidate = (event) => {
+          (async () => {
+            console.log(event.candidate.toJSON());
+          })();
+        }
+
+
+        
+
+        console.log(callDetails);
 
       } catch (e) {
         console.log(e);
