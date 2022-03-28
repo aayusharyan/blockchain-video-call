@@ -52,6 +52,7 @@ const CallBottomNav = (props) => {
     props.mediaStream.getTracks().forEach(function(track) {
       track.stop();
     });
+    props.peerConnection.close();
     navigate("/");
   }
 

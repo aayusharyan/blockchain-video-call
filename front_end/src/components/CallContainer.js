@@ -51,8 +51,6 @@ const CallContainer = () => {
         return;
       }
 
-      console.log(peerConnection, userAccount, callURLForWeb3, dispatch);
-
       try {
         const filter = {
           address: CONTRACT_ADDRESS,
@@ -89,6 +87,8 @@ const CallContainer = () => {
           variant: "warning",
           text: "Connecting to Bockchain..."
         });
+
+        console.log(callURLForWeb3);
 
         const contract = new ethers.Contract(CONTRACT_ADDRESS, contractMetadata.output.abi, provider);
         const contractWithSigner = contract.connect(userAccount);
@@ -170,7 +170,7 @@ const CallContainer = () => {
               ) : false}
 
               <CallCanvas localMediaStream={localStream} remoteMediaStream={remoteStream} style={{ height: Object.keys(alertDetails).length > 0 ? "calc(100% - 10.5rem)" : "calc(100% - 6rem)" }} />
-              <CallBottomNav toggleChatVisibility={toggleChatVisibility} chatVisibility={isChatVisible} mediaStream={localStream} />
+              <CallBottomNav toggleChatVisibility={toggleChatVisibility} chatVisibility={isChatVisible} mediaStream={localStream} peerConnection={peerConnection} />
             </Card.Body>
           </Card>
         </div>
