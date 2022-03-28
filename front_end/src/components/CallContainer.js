@@ -61,7 +61,7 @@ const CallContainer = () => {
             const contractWithSigner = contract.connect(userAccount);
 
             const callDetails = await contractWithSigner.getCallDetails(utils.toUtf8Bytes(callURLForWeb3));
-            console.log(callDetails);
+            console.log(peerConnection);
             if (callDetails.initiator_addr === userAccount.address) {
               if (callDetails.answer_type !== "") {
                 const remoteOffer = {
@@ -108,6 +108,9 @@ const CallContainer = () => {
           const receipt = await transaction.wait();
 
           console.log(receipt);
+          localStream.getTracks().forEach(track => {
+            peerConnection.addTrack(track, localStream);
+          });
         } else {
           if (callDetails.offer_type !== "") {
             const remoteOffer = {
@@ -141,7 +144,14 @@ const CallContainer = () => {
         peerConnection.ontrack = (e) => {
           console.log('OnTrack Fired');
           console.log(e);
-          setRemoteStream(localStream);
+          // setRemoteStream(localStream);
+          if (e.streams.length > 0) {
+            const remoteStream = new MediaStream();
+            e.streams[0].getTracks().forEach((track) => {
+              remoteStream.addTrack(track);
+            });
+            setRemoteStream(remoteStream);
+          }
         }
 
 

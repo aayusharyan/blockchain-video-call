@@ -64,7 +64,6 @@ const HomeContainer = () => {
       const userWallet = new Wallet(account, provider);
       setSecondaryUserAccount(userWallet);
       dispatch(setWallet(userWallet));
-      console.log(userWallet);
     }
   }, [account, dispatch]);
 
@@ -78,7 +77,6 @@ const HomeContainer = () => {
     dispatch(setWalletProvider(connectedWalletType));
   }, [connectedWalletType, dispatch])
 
-  console.log(useWeb3React());
   const connectToMetamask = () => {
     (async () => {
       try {
