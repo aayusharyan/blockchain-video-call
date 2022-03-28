@@ -56,18 +56,30 @@ const CallContainer = () => {
       try {
         const filter = {
           address: CONTRACT_ADDRESS,
-          topics: [
-            // the name of the event, parnetheses containing the data type of each event, no spaces
-            // utils.id("ICEUpdated(string)"),
-            utils.id("callLogs(address, string)"),
-          ]
         };
         provider.on(filter, (log, event) => {
-          console.log(log);
-          console.log(event);
-          // do whatever you want here
-          // I'm pretty sure this returns a promise, so don't forget to resolve it
-          setRemoteStream(localStream);
+          (async(log, event) => {
+            const contract = new ethers.Contract(CONTRACT_ADDRESS, contractMetadata.output.abi, provider);
+            const contractWithSigner = contract.connect(userAccount);
+  
+            const callDetails = await contractWithSigner.getCallDetails(utils.toUtf8Bytes(callURLForWeb3));
+            console.log(callDetails);
+            if (callDetails.initiator_addr === userAccount.address) {
+              if(callDetails.answer_type !== "") {
+                const remoteOffer = {
+                  sdp: callDetails.offer_sdp,
+                  type: callDetails.offer_type
+                };
+                peerConnection.setRemoteDescription(remoteOffer);
+              }            
+            } else {
+              const remoteOffer = {
+                sdp: callDetails.answer_sdp,
+                type: callDetails.answer_type
+              };
+              peerConnection.setRemoteDescription(remoteOffer);
+            }
+          })(log, event);
         });
 
         const localStream = await getMediaStream();
@@ -77,7 +89,7 @@ const CallContainer = () => {
           variant: "warning",
           text: "Connecting to Bockchain..."
         });
-        
+
         const contract = new ethers.Contract(CONTRACT_ADDRESS, contractMetadata.output.abi, provider);
         const contractWithSigner = contract.connect(userAccount);
 
@@ -85,24 +97,28 @@ const CallContainer = () => {
         const gasPrice = await provider.getFeeData();
         console.log(callDetails);
 
-        if(callDetails.initiator_addr === userAccount.address) {
+        if (callDetails.initiator_addr === userAccount.address) {
           const offerDetails = await generateOffer(peerConnection);
           peerConnection.setLocalDescription(offerDetails);
           const transaction = await contractWithSigner.joinCall(utils.toUtf8Bytes(callURLForWeb3), offerDetails.sdp, offerDetails.type, { gasLimit: 350000, maxFeePerGas: gasPrice.maxFeePerGas.add(gasPrice.maxFeePerGas), maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas.add(gasPrice.maxPriorityFeePerGas) });
           console.log(transaction);
 
           const receipt = await transaction.wait();
-          
+
           console.log(receipt);
         } else {
-          peerConnection.setRemoteDescription(callDetails.offer_sdp);
+          const remoteOffer = {
+            sdp: callDetails.offer_sdp,
+            type: callDetails.offer_type
+          };
+          peerConnection.setRemoteDescription(remoteOffer);
           const answerDetails = await peerConnection.createAnswer();
           peerConnection.setLocalDescription(answerDetails);
           const transaction = await contractWithSigner.joinCall(utils.toUtf8Bytes(callURLForWeb3), answerDetails.sdp, answerDetails.type, { gasLimit: 350000, maxFeePerGas: gasPrice.maxFeePerGas.add(gasPrice.maxFeePerGas), maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas.add(gasPrice.maxPriorityFeePerGas) });
           console.log(transaction);
 
           const receipt = await transaction.wait();
-          
+
           console.log(receipt);
         }
 
@@ -111,7 +127,7 @@ const CallContainer = () => {
           text: "You are connected!"
         });
 
-        
+
 
         peerConnection.onicecandidate = (event) => {
           (async () => {
