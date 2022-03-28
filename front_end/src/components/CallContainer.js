@@ -39,7 +39,7 @@ const CallContainer = () => {
     (async () => {
       setAlertDetails({
         variant: "warning",
-        text: "Waiting for Participant..."
+        text: "Joining Call..."
       });
 
       if (userAccount === undefined || callURLForWeb3 === "") {
@@ -67,12 +67,16 @@ const CallContainer = () => {
           console.log(event);
           // do whatever you want here
           // I'm pretty sure this returns a promise, so don't forget to resolve it
+          setRemoteStream(localStream);
         });
 
         const localStream = await getMediaStream();
         setLocalStream(localStream);
-        setRemoteStream(localStream);
 
+        setAlertDetails({
+          variant: "warning",
+          text: "Connecting to Bockchain..."
+        });
         
         const contract = new ethers.Contract(CONTRACT_ADDRESS, contractMetadata.output.abi, provider);
         const contractWithSigner = contract.connect(userAccount);
@@ -101,6 +105,11 @@ const CallContainer = () => {
           
           console.log(receipt);
         }
+
+        setAlertDetails({
+          variant: "success",
+          text: "You are connected!"
+        });
 
         
 
@@ -138,7 +147,7 @@ const CallContainer = () => {
           <Card style={{ height: "100%" }}>
             <Card.Body className='px-3'>
               {Object.keys(alertDetails).length > 0 ? (
-                <Alert variant={alertDetails.variant} dismissible onClick={() => { setAlertDetails({}) }}>
+                <Alert variant={alertDetails.variant} dismissible onClose={() => { setAlertDetails({}) }}>
                   {alertDetails.text}
                 </Alert>
               ) : false}

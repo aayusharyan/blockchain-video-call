@@ -48,6 +48,17 @@ const CallBottomNav = (props) => {
     setVideoInSrc(deviceId);
   }
 
+  const endCall = () => {
+    props.mediaStream.getTracks().forEach(function(track) {
+      track.stop();
+    });
+    navigate("/");
+  }
+
+  const fullScreen = () => {
+    document.body.requestFullscreen();
+  }
+
   return (
     <Container fluid>
       <Navbar expand="lg" variant="light" bg="light" style={{ borderRadius: "1rem" }}>
@@ -109,10 +120,9 @@ const CallBottomNav = (props) => {
               </DropdownButton>
             </ButtonGroup>
           </Stack>
-          {/* TODO: End the stream when this happens */}
-          <Button variant="outline-danger" className='col-md-4' onClick={() => { navigate("/") }}>End Call &nbsp; &nbsp; <FontAwesomeIcon icon={faPhoneSlash} /></Button>
+          <Button variant="outline-danger" className='col-md-4' onClick={endCall}>End Call &nbsp; &nbsp; <FontAwesomeIcon icon={faPhoneSlash} /></Button>
           <Stack direction='horizontal' className='col-md-4 pe-4' gap={3}>
-            <Button className="ms-auto">
+            <Button className="ms-auto" onClick={fullScreen}>
               <FontAwesomeIcon icon={faUpRightAndDownLeftFromCenter} />
             </Button>
             <Button>
