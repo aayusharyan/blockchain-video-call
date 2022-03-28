@@ -51,6 +51,13 @@ const CallContainer = () => {
         return;
       }
 
+      peerConnection.onicecandidate = (event) => {
+        console.log(event);
+        // (async () => {
+        //   console.log(event.candidate.toJSON());
+        // })();
+      }
+
       try {
         const filter = {
           address: CONTRACT_ADDRESS,
@@ -133,13 +140,6 @@ const CallContainer = () => {
           variant: "success",
           text: "You are connected!"
         });
-
-
-        peerConnection.onicecandidate = (event) => {
-          (async () => {
-            console.log(event.candidate.toJSON());
-          })();
-        }
 
         peerConnection.ontrack = (e) => {
           console.log('OnTrack Fired');
