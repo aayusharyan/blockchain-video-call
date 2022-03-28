@@ -128,13 +128,17 @@ const CallContainer = () => {
         });
 
 
-
         peerConnection.onicecandidate = (event) => {
           (async () => {
             console.log(event.candidate.toJSON());
           })();
         }
 
+        peerConnection.ontrack = (e) => {
+          console.log('OnTrack Fired');
+          console.log(e);
+          setRemoteStream(localStream);
+        }
 
 
       } catch (e) {
@@ -145,9 +149,6 @@ const CallContainer = () => {
         });
       }
 
-
-
-      // dispatch(setPeerConnection(peerConnection));
       console.log(peerConnection);
     })();
   }, [peerConnection, userAccount, callURLForWeb3, dispatch]);
