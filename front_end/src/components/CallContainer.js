@@ -58,6 +58,22 @@ const CallContainer = () => {
         // })();
       }
 
+      peerConnection.ontrack = (e) => {
+        console.log('OnTrack Fired');
+        console.log(e);
+        // setRemoteStream(localStream);
+        if (e.streams.length > 0) {
+          const remoteStream = new MediaStream();
+          e.streams[0].getTracks().forEach((track) => {
+            remoteStream.addTrack(track);
+          });
+          setRemoteStream(remoteStream);
+        }
+      }
+      peerConnection.ondatachannel = (event) => {
+        console.log(event);
+      }
+
       try {
         const filter = {
           address: CONTRACT_ADDRESS,
@@ -68,24 +84,26 @@ const CallContainer = () => {
             const contractWithSigner = contract.connect(userAccount);
 
             const callDetails = await contractWithSigner.getCallDetails(utils.toUtf8Bytes(callURLForWeb3));
-            console.log(peerConnection);
-            if (callDetails.initiator_addr === userAccount.address) {
-              if (callDetails.offer_type !== "") {
-                const remoteOffer = {
-                  sdp: callDetails.offer_sdp,
-                  type: callDetails.offer_type
-                };
-                peerConnection.setRemoteDescription(remoteOffer);
-              }
-            } else {
-              if (callDetails.answer_type !== "") {
-                const remoteOffer = {
-                  sdp: callDetails.answer_sdp,
-                  type: callDetails.answer_type
-                };
-                peerConnection.setRemoteDescription(remoteOffer);
+            if (peerConnection.signalingState !== "stable") {
+              if (callDetails.initiator_addr === userAccount.address) {
+                if (callDetails.offer_type !== "") {
+                  const remoteOffer = {
+                    sdp: callDetails.offer_sdp,
+                    type: callDetails.offer_type
+                  };
+                  peerConnection.setRemoteDescription(remoteOffer);
+                }
+              } else {
+                if (callDetails.answer_type !== "") {
+                  const remoteOffer = {
+                    sdp: callDetails.answer_sdp,
+                    type: callDetails.answer_type
+                  };
+                  peerConnection.setRemoteDescription(remoteOffer);
+                }
               }
             }
+            console.log(peerConnection);
           })(log, event);
         });
 
@@ -115,9 +133,7 @@ const CallContainer = () => {
           const receipt = await transaction.wait();
 
           console.log(receipt);
-          localStream.getTracks().forEach(track => {
-            peerConnection.addTrack(track, localStream);
-          });
+
         } else {
           if (callDetails.offer_type !== "") {
             const remoteOffer = {
@@ -136,24 +152,15 @@ const CallContainer = () => {
           }
         }
 
+        localStream.getTracks().forEach(track => {
+          console.log(track);
+          peerConnection.addTrack(track, localStream);
+        });
+
         setAlertDetails({
           variant: "success",
           text: "You are connected!"
         });
-
-        peerConnection.ontrack = (e) => {
-          console.log('OnTrack Fired');
-          console.log(e);
-          // setRemoteStream(localStream);
-          if (e.streams.length > 0) {
-            const remoteStream = new MediaStream();
-            e.streams[0].getTracks().forEach((track) => {
-              remoteStream.addTrack(track);
-            });
-            setRemoteStream(remoteStream);
-          }
-        }
-
 
       } catch (e) {
         console.log(e);
