@@ -58,7 +58,7 @@ const CallContainer = () => {
           address: CONTRACT_ADDRESS,
           topics: [
             // the name of the event, parnetheses containing the data type of each event, no spaces
-            utils.id("ICEUpdated(string)"),
+            // utils.id("ICEUpdated(string)"),
             utils.id("callLogs(address, string)"),
           ]
         };
@@ -79,8 +79,9 @@ const CallContainer = () => {
 
         const callDetails = await contractWithSigner.getCallDetails(utils.toUtf8Bytes(callURLForWeb3));
         const gasPrice = await provider.getFeeData();
-        
-        if(callDetails.initiator_addr !== userAccount.address) {
+        console.log(callDetails);
+
+        if(callDetails.initiator_addr === userAccount.address) {
           const offerDetails = await generateOffer(peerConnection);
           peerConnection.setLocalDescription(offerDetails);
           const transaction = await contractWithSigner.joinCall(utils.toUtf8Bytes(callURLForWeb3), offerDetails.sdp, offerDetails.type, { gasLimit: 350000, maxFeePerGas: gasPrice.maxFeePerGas.add(gasPrice.maxFeePerGas), maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas.add(gasPrice.maxPriorityFeePerGas) });
@@ -110,9 +111,6 @@ const CallContainer = () => {
         }
 
 
-        
-
-        console.log(callDetails);
 
       } catch (e) {
         console.log(e);
