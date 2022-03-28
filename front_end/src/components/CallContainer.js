@@ -86,10 +86,10 @@ const CallContainer = () => {
             const callDetails = await contractWithSigner.getCallDetails(utils.toUtf8Bytes(callURLForWeb3));
             if (peerConnection.signalingState !== "stable") {
               if (callDetails.initiator_addr === userAccount.address) {
-                if (callDetails.offer_type !== "") {
+                if (callDetails.answer_type !== "") {
                   const remoteOffer = {
-                    sdp: callDetails.offer_sdp,
-                    type: callDetails.offer_type
+                    sdp: callDetails.answer_sdp,
+                    type: callDetails.answer_type
                   };
                   peerConnection.setRemoteDescription(remoteOffer);
                 }
