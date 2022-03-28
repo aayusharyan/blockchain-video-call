@@ -61,7 +61,7 @@ const NavBar = () => {
 
   return (
     <Navbar bg="light" expand="lg">
-      <Container fluid className='mx-4 p-3'>
+      <Container fluid className='mx-4'>
         <Link to="/" style={{ textDecoration: "none" }}>
           <Navbar.Brand>
             <img

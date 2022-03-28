@@ -158,7 +158,7 @@ const HomeContainer = () => {
 
         const gasPrice    = await provider.getFeeData();
         const transaction = await contractWithSigner.generateCall("", offerDetails.sdp, offerDetails.type, { gasLimit: 350000, maxFeePerGas: gasPrice.maxFeePerGas.add(gasPrice.maxFeePerGas), maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas.add(gasPrice.maxPriorityFeePerGas) });
-
+        console.log(transaction);
         setJoiningCallModalStatus(JOIN_STATUS_WAITING_FOR_MINT);
 
         const receipt = await transaction.wait();
@@ -183,7 +183,7 @@ const HomeContainer = () => {
       case LOGIN_STATE_NO_LOGIN:
         return (
           <>
-            <h1>Checking web3 connectivity...</h1>
+            <h1>Web3 version</h1>
             <h6 className='mb-5'>A.K.A. Blockchain</h6>
             <h3>Select your Wallet</h3>
             <Stack direction='horizontal' gap={4} className='mt-5'>
@@ -302,7 +302,7 @@ const HomeContainer = () => {
 
           </Stack>
         </Container>
-        <Navbar expand="lg" fixed="bottom">
+        <Navbar expand="lg" fixed="bottom" style={{ zIndex: "-5" }}>
           <img src={gridSection} style={{ width: "100%", height: "12rem", position: "absolute", bottom: "0rem", zIndex: "-5" }} alt="" />
           <Container fluid className="justify-content-center">
             <h4>Developed with <FontAwesomeIcon icon={faMugHot} /> by <a href='https://yush.dev' rel="noreferrer" target="_blank">Aayush Sinha</a></h4>

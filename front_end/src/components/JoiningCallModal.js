@@ -1,7 +1,10 @@
+import { useState, useEffect } from "react";
 import { Modal, ProgressBar } from "react-bootstrap";
 import { JOIN_STATUS_MAKING_CONNECTION, JOIN_STATUS_GENERATING_TRANSACTION, JOIN_STATUS_WAITING_FOR_MINT, JOIN_STATUS_REDIRECTING } from "../constants";
 
 const JoiningCallModal = (props) => {
+  const [percent, setPercent] = useState(0);
+
   const getStatusText = () => {
     switch(props.status) {
       case JOIN_STATUS_MAKING_CONNECTION:
@@ -16,21 +19,32 @@ const JoiningCallModal = (props) => {
         return "";
     }
   }
+  useEffect(() => {
+    setInterval(() => {
+      setPercent((old) => old + 0.5);
+    }, 1000);
+  }, [])
 
-  const getPercent = () => {
+  useEffect(() => {
     switch(props.status) {
       case JOIN_STATUS_MAKING_CONNECTION:
-        return 10;
+          setPercent(10);
+          break;
       case JOIN_STATUS_GENERATING_TRANSACTION:
-        return 20;
+        setPercent(15);
+        break;
       case JOIN_STATUS_WAITING_FOR_MINT:
-        return 45;
+        setPercent(20);
+        break;
       case JOIN_STATUS_REDIRECTING:
-        return 100;
+        setPercent(100);
+        break;
       default:
-        return 0;
+        setPercent(0);
+        break;
     }
-  }
+  }, [props.status])
+  
   return (
     <Modal
       show={props.show}
@@ -44,7 +58,7 @@ const JoiningCallModal = (props) => {
       </Modal.Header>
       <Modal.Body>
         <h4>{getStatusText()}</h4>
-        <ProgressBar striped variant="primary" now={getPercent()} animated style={{ height: "0.75rem" }} />
+        <ProgressBar striped variant="primary" now={percent} animated style={{ height: "0.75rem" }} />
       </Modal.Body>
       <Modal.Footer>
       </Modal.Footer>
