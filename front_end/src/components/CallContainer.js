@@ -54,6 +54,9 @@ const CallContainer = () => {
       peerConnection.onicecandidate = (event) => {
         console.log(event);
         (async() => {
+          // if(callURLForWeb3 === "") {
+          //   return;
+          // }
           const contract = new ethers.Contract(CONTRACT_ADDRESS, contractMetadata.output.abi, provider);
           const gasPrice = await provider.getFeeData();
           const contractWithSigner = contract.connect(userAccount);
@@ -64,7 +67,8 @@ const CallContainer = () => {
             candidate.sdpMid,
             candidate.usernameFragment
           ];
-          console.log(iceDetails);
+          console.log(event);
+          // console.log(callURLForWeb3);
 
           await contractWithSigner.addICECandidate(utils.toUtf8Bytes(callURLForWeb3), iceDetails, { gasLimit: 350000, maxFeePerGas: gasPrice.maxFeePerGas.add(gasPrice.maxFeePerGas).add(gasPrice.maxFeePerGas).add(gasPrice.maxFeePerGas).add(gasPrice.maxFeePerGas), maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas.add(gasPrice.maxPriorityFeePerGas).add(gasPrice.maxPriorityFeePerGas) });
         })();
@@ -141,6 +145,11 @@ const CallContainer = () => {
         const gasPrice = await provider.getFeeData();
         console.log(callDetails);
 
+        localStream.getTracks().forEach(track => {
+          console.log(track);
+          peerConnection.addTrack(track, localStream);
+        });
+
         if (callDetails.initiator_addr === userAccount.address) {
           const offerDetails = await generateOffer(peerConnection);
           peerConnection.setLocalDescription(offerDetails);
@@ -168,11 +177,6 @@ const CallContainer = () => {
             console.log(receipt);
           }
         }
-
-        localStream.getTracks().forEach(track => {
-          console.log(track);
-          peerConnection.addTrack(track, localStream);
-        });
 
         setAlertDetails({
           variant: "success",

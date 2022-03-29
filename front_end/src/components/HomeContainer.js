@@ -20,9 +20,8 @@ import moment from 'moment';
 import contractMetadata from '../contractMetadata';
 import { ethers, Wallet } from 'ethers';
 import { useDispatch } from 'react-redux';
-import { setPeerConnection, setWallet, setWalletProvider } from '../actions';
+import { setWallet, setWalletProvider } from '../actions';
 import JoiningCallModal from './JoiningCallModal';
-import { generateOffer, getNewPeerConnection } from '../functions/Call';
 import { provider } from '../functions/Web3';
 
 const HomeContainer = () => {
@@ -144,17 +143,13 @@ const HomeContainer = () => {
     (async _ => {
       try {
 
-        const peerConnection = getNewPeerConnection();
-        dispatch(setPeerConnection(peerConnection));
-        const offerDetails = await generateOffer(peerConnection);
-
         const contract = new ethers.Contract(CONTRACT_ADDRESS, contractMetadata.output.abi, provider);
         const contractWithSigner = contract.connect(secondaryUserAccount);
 
         setJoiningCallModalStatus(JOIN_STATUS_GENERATING_TRANSACTION);
 
         const gasPrice    = await provider.getFeeData();
-        const transaction = await contractWithSigner.generateCall(offerDetails.sdp, offerDetails.type, { gasLimit: 350000, maxFeePerGas: gasPrice.maxFeePerGas.add(gasPrice.maxFeePerGas).add(gasPrice.maxFeePerGas).add(gasPrice.maxFeePerGas), maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas.add(gasPrice.maxPriorityFeePerGas).add(gasPrice.maxPriorityFeePerGas) });
+        const transaction = await contractWithSigner.generateCall({ gasLimit: 350000, maxFeePerGas: gasPrice.maxFeePerGas.add(gasPrice.maxFeePerGas).add(gasPrice.maxFeePerGas).add(gasPrice.maxFeePerGas), maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas.add(gasPrice.maxPriorityFeePerGas).add(gasPrice.maxPriorityFeePerGas) });
         console.log(transaction);
         setJoiningCallModalStatus(JOIN_STATUS_WAITING_FOR_MINT);
 

@@ -90,18 +90,7 @@ const contractMetadata = {
 				"type": "function"
 			},
 			{
-				"inputs": [
-					{
-						"internalType": "string",
-						"name": "o_sdp",
-						"type": "string"
-					},
-					{
-						"internalType": "string",
-						"name": "o_type",
-						"type": "string"
-					}
-				],
+				"inputs": [],
 				"name": "generateCall",
 				"outputs": [],
 				"stateMutability": "nonpayable",
@@ -282,11 +271,11 @@ const contractMetadata = {
 	},
 	"sources": {
 		"Talkie.sol": {
-			"keccak256": "0x1207c2ea37d1f3bb27dffe9cc803232d447ccdcd27dc75c68c3d5879e8e669d3",
+			"keccak256": "0xb37c94aa2198e628c23ad58f71eda03fe6aaac6c9f69b92b998f2dbd1d46d0ad",
 			"license": "GPL-3.0",
 			"urls": [
-				"bzz-raw://3f604692e47502681dc59b769964e11eea4865748b2444cc26eece28be4be557",
-				"dweb:/ipfs/QmeGb1UDQ9evv72bk8za2RJYjoovEtczNzocdG7eH26BgQ"
+				"bzz-raw://eb01576fb3bb9d351522411a71cc7f3811180445c7533ed6c399b8c21966187c",
+				"dweb:/ipfs/QmNXn858LjZ74iSKcuUd1ahTSTBg2LEAmfpnKH93VSVAmF"
 			]
 		}
 	},

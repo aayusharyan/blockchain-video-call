@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { getMediaDeviceList, getNewStream } from '../functions/Call';
 import { Container, Navbar, Button, Stack, Dropdown, DropdownButton, ButtonGroup, Form } from 'react-bootstrap/';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faVideo, faMicrophone, faVolumeHigh, faMessage, faShareFromSquare, faPhoneSlash, faUpRightAndDownLeftFromCenter } from '@fortawesome/free-solid-svg-icons'
+import { faVideo, faMicrophone, faVolumeHigh, faMessage, faShareFromSquare, faPhone, faUpRightAndDownLeftFromCenter } from '@fortawesome/free-solid-svg-icons'
 import { useNavigate } from 'react-router-dom';
 
 const CallBottomNav = (props) => {
@@ -121,7 +121,7 @@ const CallBottomNav = (props) => {
               </DropdownButton>
             </ButtonGroup>
           </Stack>
-          <Button variant="outline-danger" className='col-md-4' onClick={endCall}>End Call &nbsp; &nbsp; <FontAwesomeIcon icon={faPhoneSlash} /></Button>
+          <Button variant="outline-danger" className='col-md-4' onClick={endCall}>End Call &nbsp; &nbsp; <FontAwesomeIcon icon={faPhone} style={{transform: "rotate(225deg)"}} /></Button>
           <Stack direction='horizontal' className='col-md-4 pe-4' gap={3}>
             <Button className="ms-auto" onClick={fullScreen}>
               <FontAwesomeIcon icon={faUpRightAndDownLeftFromCenter} />

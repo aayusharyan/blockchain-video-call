@@ -44,15 +44,13 @@ contract Talkie {
     event ICEUpdated(string CallURL);
 
     //Generate the call and return new Call URL.
-    function generateCall(string calldata o_sdp, string calldata o_type) public {
+    function generateCall() public {
         randNonce++;
         uint32 callId = uint32(uint(keccak256(abi.encodePacked(block.timestamp, msg.sender, randNonce))) % 899999999) + 100000000;
 
         //Check if Call ID Exists already, then generate a new one.
             
         callList[callId].key            = ENCRYPTION_KEY;
-        callList[callId].offer_sdp      = o_sdp;
-        callList[callId].offer_type     = o_type;
         callList[callId].initiator_addr = msg.sender;
         emit callLogs(msg.sender, convertCallIdToCallURL(callId));
     }
