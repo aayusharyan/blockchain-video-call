@@ -5,7 +5,7 @@ export const LOGIN_STATE_NO_WEB3        = 4;
 
 export const ROPSTEN_CHAIN_ID = 3;
 export const ROPSTEN_CHAIN_ID_HEX = "0x3";
-export const CONTRACT_ADDRESS = "0x253828c8c6ab7efe5e74b48823338e8e158ffae7";
+export const CONTRACT_ADDRESS = "0x5522719340b037a17f38dc6637ec30cce38c5dfe";
 
 export const ACTION_TYPE_SET_ACCOUNT          = "ACTION_TYPE_SET_ACCOUNT";
 export const ACTION_TYPE_SET_PEER_CONNECTON   = "ACTION_TYPE_SET_PEER_CONNECTION";

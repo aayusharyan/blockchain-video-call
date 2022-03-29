@@ -25,6 +25,8 @@ const CallContainer = () => {
   const [callURLForWeb3, setCallURLForWeb3] = useState("");
   const dispatch = useDispatch();
   const userAccount = useSelector((state) => state.wallet);
+  const [iceDetailsArr, setIceDetailsArr] = useState([]);
+  const [useBatch, setUseBatch] = useState(true);
 
   useEffect(() => {
     if (!callURL.match(WEB3_CALL_REGEX)) {
@@ -42,7 +44,7 @@ const CallContainer = () => {
         text: "Joining Call..."
       });
 
-      if (userAccount === undefined || callURLForWeb3 === "") {
+      if (userAccount === undefined || callURLForWeb3 === "" || iceDetailsArr.length > 0 || useBatch === false) {
         return;
       }
       if (peerConnection === undefined) {
@@ -51,30 +53,40 @@ const CallContainer = () => {
         return;
       }
 
+      console.log(peerConnection);
+      // if(peerConnection.signalingState === "stable") {
+      //   return;
+      // }
+
       peerConnection.onicecandidate = (event) => {
         console.log(event);
         (async() => {
-          // if(callURLForWeb3 === "") {
-          //   return;
-          // }
-          const contract = new ethers.Contract(CONTRACT_ADDRESS, contractMetadata.output.abi, provider);
-          const gasPrice = await provider.getFeeData();
-          const contractWithSigner = contract.connect(userAccount);
-          const candidate = event.candidate.toJSON();
-          const iceDetails = [
-            candidate.candidate,
-            candidate.sdpMLineIndex,
-            candidate.sdpMid,
-            candidate.usernameFragment
-          ];
+            if(event.candidate === null) {
+              return;
+            }
+            const candidate = event.candidate.toJSON();
+            const iceDetails = [
+              candidate.candidate,
+              candidate.sdpMLineIndex,
+              candidate.sdpMid,
+              ""
+            ];
+          if(useBatch) {
+            setIceDetailsArr(existing => [...existing, iceDetails]);
+          } else {
+            const contract = new ethers.Contract(CONTRACT_ADDRESS, contractMetadata.output.abi, provider);
+            const gasPrice = await provider.getFeeData();
+            const contractWithSigner = contract.connect(userAccount);
+            if(false) {
+              await contractWithSigner.addICECandidate(utils.toUtf8Bytes(callURLForWeb3), iceDetails, { gasLimit: 350000, maxFeePerGas: gasPrice.maxFeePerGas.add(gasPrice.maxFeePerGas).add(gasPrice.maxFeePerGas).add(gasPrice.maxFeePerGas).add(gasPrice.maxFeePerGas), maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas.add(gasPrice.maxPriorityFeePerGas).add(gasPrice.maxPriorityFeePerGas) });
+            }
+          }
+          
           console.log(event);
+          console.log(iceDetails);
           // console.log(callURLForWeb3);
-
-          await contractWithSigner.addICECandidate(utils.toUtf8Bytes(callURLForWeb3), iceDetails, { gasLimit: 350000, maxFeePerGas: gasPrice.maxFeePerGas.add(gasPrice.maxFeePerGas).add(gasPrice.maxFeePerGas).add(gasPrice.maxFeePerGas).add(gasPrice.maxFeePerGas), maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas.add(gasPrice.maxPriorityFeePerGas).add(gasPrice.maxPriorityFeePerGas) });
+          
         })();
-        // (async () => {
-        //   console.log(event.candidate.toJSON());
-        // })();
       }
 
       peerConnection.ontrack = (e) => {
@@ -153,7 +165,9 @@ const CallContainer = () => {
         if (callDetails.initiator_addr === userAccount.address) {
           const offerDetails = await generateOffer(peerConnection);
           peerConnection.setLocalDescription(offerDetails);
-          const transaction = await contractWithSigner.joinCall(utils.toUtf8Bytes(callURLForWeb3), offerDetails.sdp, offerDetails.type, { gasLimit: 350000, maxFeePerGas: gasPrice.maxFeePerGas.add(gasPrice.maxFeePerGas).add(gasPrice.maxFeePerGas).add(gasPrice.maxFeePerGas), maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas.add(gasPrice.maxPriorityFeePerGas).add(gasPrice.maxPriorityFeePerGas) });
+          console.log(offerDetails.sdp.length);
+          console.log(offerDetails.type.length);
+          const transaction = await contractWithSigner.joinCall(utils.toUtf8Bytes(callURLForWeb3), offerDetails.sdp, offerDetails.type, { gasLimit: 7350000, maxFeePerGas: gasPrice.maxFeePerGas.add(gasPrice.maxFeePerGas).add(gasPrice.maxFeePerGas).add(gasPrice.maxFeePerGas), maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas.add(gasPrice.maxPriorityFeePerGas).add(gasPrice.maxPriorityFeePerGas) });
           console.log(transaction);
 
           const receipt = await transaction.wait();
@@ -169,7 +183,7 @@ const CallContainer = () => {
             peerConnection.setRemoteDescription(remoteOffer);
             const answerDetails = await peerConnection.createAnswer();
             peerConnection.setLocalDescription(answerDetails);
-            const transaction = await contractWithSigner.joinCall(utils.toUtf8Bytes(callURLForWeb3), answerDetails.sdp, answerDetails.type, { gasLimit: 350000, maxFeePerGas: gasPrice.maxFeePerGas.add(gasPrice.maxFeePerGas).add(gasPrice.maxFeePerGas).add(gasPrice.maxFeePerGas), maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas.add(gasPrice.maxPriorityFeePerGas).add(gasPrice.maxPriorityFeePerGas) });
+            const transaction = await contractWithSigner.joinCall(utils.toUtf8Bytes(callURLForWeb3), answerDetails.sdp, answerDetails.type, { gasLimit: 7350000, maxFeePerGas: gasPrice.maxFeePerGas.add(gasPrice.maxFeePerGas).add(gasPrice.maxFeePerGas).add(gasPrice.maxFeePerGas), maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas.add(gasPrice.maxPriorityFeePerGas).add(gasPrice.maxPriorityFeePerGas) });
             console.log(transaction);
 
             const receipt = await transaction.wait();
@@ -177,6 +191,10 @@ const CallContainer = () => {
             console.log(receipt);
           }
         }
+
+        console.log(iceDetailsArr);
+
+        setUseBatch(false);
 
         setAlertDetails({
           variant: "success",
@@ -193,7 +211,7 @@ const CallContainer = () => {
 
       console.log(peerConnection);
     })();
-  }, [peerConnection, userAccount, callURLForWeb3, dispatch]);
+  }, [peerConnection, userAccount, callURLForWeb3, dispatch, useBatch, iceDetailsArr]);
 
   const toggleChatVisibility = () => {
     setChatVisible(chatVisibility => !chatVisibility);

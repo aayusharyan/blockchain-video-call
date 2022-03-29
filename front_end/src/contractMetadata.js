@@ -65,10 +65,40 @@ const contractMetadata = {
 								"internalType": "string",
 								"name": "sdpMid",
 								"type": "string"
+							}
+						],
+						"internalType": "struct Talkie.ICECandidate[]",
+						"name": "iceDetails",
+						"type": "tuple[]"
+					}
+				],
+				"name": "addICECandidate",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "bytes",
+						"name": "callURL",
+						"type": "bytes"
+					},
+					{
+						"components": [
+							{
+								"internalType": "string",
+								"name": "candidate",
+								"type": "string"
+							},
+							{
+								"internalType": "uint8",
+								"name": "sdpMLineIndex",
+								"type": "uint8"
 							},
 							{
 								"internalType": "string",
-								"name": "usernameFragment",
+								"name": "sdpMid",
 								"type": "string"
 							}
 						],
@@ -77,7 +107,7 @@ const contractMetadata = {
 						"type": "tuple"
 					}
 				],
-				"name": "addICECandidate",
+				"name": "appendICECandidate",
 				"outputs": [],
 				"stateMutability": "nonpayable",
 				"type": "function"
@@ -159,11 +189,6 @@ const contractMetadata = {
 										"internalType": "string",
 										"name": "sdpMid",
 										"type": "string"
-									},
-									{
-										"internalType": "string",
-										"name": "usernameFragment",
-										"type": "string"
 									}
 								],
 								"internalType": "struct Talkie.ICECandidate[]",
@@ -185,11 +210,6 @@ const contractMetadata = {
 									{
 										"internalType": "string",
 										"name": "sdpMid",
-										"type": "string"
-									},
-									{
-										"internalType": "string",
-										"name": "usernameFragment",
 										"type": "string"
 									}
 								],
@@ -271,11 +291,11 @@ const contractMetadata = {
 	},
 	"sources": {
 		"Talkie.sol": {
-			"keccak256": "0xb37c94aa2198e628c23ad58f71eda03fe6aaac6c9f69b92b998f2dbd1d46d0ad",
+			"keccak256": "0x68db0c76d909d51ed8fa675f088e85f9c68341db249feca84839a3d26eba533e",
 			"license": "GPL-3.0",
 			"urls": [
-				"bzz-raw://eb01576fb3bb9d351522411a71cc7f3811180445c7533ed6c399b8c21966187c",
-				"dweb:/ipfs/QmNXn858LjZ74iSKcuUd1ahTSTBg2LEAmfpnKH93VSVAmF"
+				"bzz-raw://85fd3134cde6a45471faa637e5d65c1bc8c14e3e8aee58c6f99719d1501cd978",
+				"dweb:/ipfs/QmeMKFYhKWQU1VDEA2pFGDmB1E47VHhfDRVthduPN1niPc"
 			]
 		}
 	},

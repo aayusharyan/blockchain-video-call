@@ -15,7 +15,6 @@ contract Talkie {
         string candidate;
         uint8 sdpMLineIndex;
         string sdpMid;
-        string usernameFragment;
     }
 
     struct Call {
@@ -56,7 +55,24 @@ contract Talkie {
     }
 
     //Add new ICECandidate to a call
-    function addICECandidate(bytes calldata callURL, ICECandidate calldata iceDetails) public {
+    function addICECandidate(bytes calldata callURL, ICECandidate[] calldata iceDetails) public {
+        uint32 callId = convertCallURLToCallId(callURL);
+        uint8 counter = 0;
+
+        if(callList[callId].initiator_addr == msg.sender) {
+            for(counter = 0; counter < iceDetails.length; counter++) {
+                callList[callId].initiator.push(iceDetails[counter]);
+            }
+        } else {
+            for(counter = 0; counter < iceDetails.length; counter++) {
+                callList[callId].joinee.push(iceDetails[counter]);
+            }
+        }
+
+        emit ICEUpdated(convertCallIdToCallURL(callId));
+    }
+
+    function appendICECandidate(bytes calldata callURL, ICECandidate calldata iceDetails) public {
         uint32 callId = convertCallURLToCallId(callURL);
 
         if(callList[callId].initiator_addr == msg.sender) {

@@ -121,7 +121,7 @@ const CallBottomNav = (props) => {
               </DropdownButton>
             </ButtonGroup>
           </Stack>
-          <Button variant="outline-danger" className='col-md-4' onClick={endCall}>End Call &nbsp; &nbsp; <FontAwesomeIcon icon={faPhone} style={{transform: "rotate(225deg)"}} /></Button>
+          <Button variant="outline-danger" className='col-md-4' onClick={endCall}>End Call &nbsp; &nbsp; <FontAwesomeIcon icon={faPhone} style={{transform: "rotate(135deg)"}} /></Button>
           <Stack direction='horizontal' className='col-md-4 pe-4' gap={3}>
             <Button className="ms-auto" onClick={fullScreen}>
               <FontAwesomeIcon icon={faUpRightAndDownLeftFromCenter} />
