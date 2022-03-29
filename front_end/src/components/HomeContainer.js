@@ -9,6 +9,7 @@ import walletConnectLogo from '../assets/walletconnect.ico';
 import coinbaseLogo from '../assets/coinbase.png';
 import ledgerLogo from '../assets/ledger.png';
 import trezorLogo from '../assets/trezor.png';
+import firebaseLogo from '../assets/firebase.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMugHot, faPlus, faPhone } from '@fortawesome/free-solid-svg-icons';
 import { useWeb3React } from '@web3-react/core';
@@ -175,20 +176,18 @@ const HomeContainer = () => {
       case LOGIN_STATE_NO_LOGIN:
         return (
           <>
-            <h1>Web3 version</h1>
-            <h6 className='mb-5'>A.K.A. Blockchain</h6>
-            <h3>Select your Wallet</h3>
+            <h1>Select your Wallet</h1>
             <Stack direction='horizontal' gap={4} className='mt-5'>
-              <Button variant="outline-warning" onClick={connectToMetamask} style={{ display: "inherit", verticalAlign: "middle" }}>
+              <Button variant="outline-light" onClick={connectToMetamask} style={{ display: "inherit", verticalAlign: "middle" }}>
                 <h5 className='mb-0 text-dark' style={{ lineHeight: "2rem" }}>Metamask</h5> &emsp;
                 <img src={metamaskLogo} alt="" style={{ height: "2rem" }} />
               </Button>
-              <Button variant="outline-primary" onClick={connectToWalletConnect} style={{ display: "inherit", verticalAlign: "middle" }}>
-                <h5 className='mb-0 text-light' style={{ lineHeight: "2rem" }}>WalletConnect</h5> &emsp;
+              <Button variant="outline-light" onClick={connectToWalletConnect} style={{ display: "inherit", verticalAlign: "middle" }}>
+                <h5 className='mb-0 text-dark' style={{ lineHeight: "2rem" }}>WalletConnect</h5> &emsp;
                 <img src={walletConnectLogo} alt="" style={{ height: "2rem" }} />
               </Button>
               <Button variant="outline-light" onClick={connectToWalletLink} style={{ display: "inherit", verticalAlign: "middle" }}>
-                <h5 className='mb-0 text-primary' style={{ lineHeight: "2rem" }}>Coinbase</h5> &emsp;
+                <h5 className='mb-0 text-dark' style={{ lineHeight: "2rem" }}>Coinbase</h5> &emsp;
                 <img src={coinbaseLogo} alt="" style={{ height: "2rem" }} />
               </Button>
             </Stack>
@@ -200,6 +199,10 @@ const HomeContainer = () => {
               <Button variant="outline-light" style={{ display: "inherit", verticalAlign: "middle" }}>
                 <h5 className='mb-0 text-dark' style={{ lineHeight: "2rem" }}>Trezor</h5> &emsp;
                 <img src={trezorLogo} alt="" style={{ height: "2rem" }} />
+              </Button>
+              <Button variant="outline-light" style={{ display: "inherit", verticalAlign: "middle" }}>
+                <h5 className='mb-0 text-dark' style={{ lineHeight: "2rem" }}>Firebase</h5> &emsp;
+                <img src={firebaseLogo} alt="" style={{ height: "2rem" }} />
               </Button>
             </Stack>
           </>

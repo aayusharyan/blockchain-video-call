@@ -167,7 +167,7 @@ const CallContainer = () => {
           peerConnection.setLocalDescription(offerDetails);
           console.log(offerDetails.sdp.length);
           console.log(offerDetails.type.length);
-          const transaction = await contractWithSigner.joinCall(utils.toUtf8Bytes(callURLForWeb3), offerDetails.sdp, offerDetails.type, { gasLimit: 7350000, maxFeePerGas: gasPrice.maxFeePerGas.add(gasPrice.maxFeePerGas).add(gasPrice.maxFeePerGas).add(gasPrice.maxFeePerGas), maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas.add(gasPrice.maxPriorityFeePerGas).add(gasPrice.maxPriorityFeePerGas) });
+          const transaction = await contractWithSigner.joinCall(utils.toUtf8Bytes(callURLForWeb3), offerDetails.sdp, offerDetails.type, { gasLimit: 8000000, maxFeePerGas: gasPrice.maxFeePerGas.add(gasPrice.maxFeePerGas).add(gasPrice.maxFeePerGas).add(gasPrice.maxFeePerGas), maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas.add(gasPrice.maxPriorityFeePerGas).add(gasPrice.maxPriorityFeePerGas) });
           console.log(transaction);
 
           const receipt = await transaction.wait();
@@ -183,7 +183,7 @@ const CallContainer = () => {
             peerConnection.setRemoteDescription(remoteOffer);
             const answerDetails = await peerConnection.createAnswer();
             peerConnection.setLocalDescription(answerDetails);
-            const transaction = await contractWithSigner.joinCall(utils.toUtf8Bytes(callURLForWeb3), answerDetails.sdp, answerDetails.type, { gasLimit: 7350000, maxFeePerGas: gasPrice.maxFeePerGas.add(gasPrice.maxFeePerGas).add(gasPrice.maxFeePerGas).add(gasPrice.maxFeePerGas), maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas.add(gasPrice.maxPriorityFeePerGas).add(gasPrice.maxPriorityFeePerGas) });
+            const transaction = await contractWithSigner.joinCall(utils.toUtf8Bytes(callURLForWeb3), answerDetails.sdp, answerDetails.type, { gasLimit: 8000000, maxFeePerGas: gasPrice.maxFeePerGas.add(gasPrice.maxFeePerGas).add(gasPrice.maxFeePerGas).add(gasPrice.maxFeePerGas), maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas.add(gasPrice.maxPriorityFeePerGas).add(gasPrice.maxPriorityFeePerGas) });
             console.log(transaction);
 
             const receipt = await transaction.wait();
