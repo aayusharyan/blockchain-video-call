@@ -14,6 +14,7 @@ const rootReducer = (currentState = initialState, action) => {
       break;
     case ACTION_TYPE_SET_PEER_STATE:
       currentState.peerState = action.payload;
+      break;
     default:
       break;
   }

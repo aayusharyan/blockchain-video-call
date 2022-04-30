@@ -4,9 +4,9 @@ import { getMediaStream } from '../functions/Call';
 import CallBottomNav from './CallBottomNav';
 import CallCanvas from './CallCanvas';
 import ChatContainer from './ChatContainer';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { getNewPeerConnection, generateOffer } from '../functions/Call';
+import { getNewPeerConnection } from '../functions/Call';
 import { setPeerConnection } from '../actions';
 import { PEER_STATE_INITIATOR } from '../constants';
 import { firestoreDB } from '../firebase';
@@ -47,7 +47,7 @@ const CallContainer = () => {
         });
       };
 
-      if(peerState == PEER_STATE_INITIATOR) {
+      if(peerState === PEER_STATE_INITIATOR) {
         // Create offer
         const offerDescription = await peerConnection.createOffer();
         await peerConnection.setLocalDescription(offerDescription);
@@ -153,7 +153,7 @@ const CallContainer = () => {
 
       console.log(peerConnection);
     })();
-  }, [peerConnection, peerState, dispatch]);
+  }, [peerConnection, peerState, dispatch, callURL]);
 
   const toggleChatVisibility = () => {
     setChatVisible(chatVisibility => !chatVisibility);
