@@ -76,6 +76,16 @@ export const generateOffer = async (peerConnection) => {
   return offer;
 }
 
+export const makeId = (length) => {
+  let result           = '';
+  const characters     = 'abcdefghijklmnopqrstuvwxyz';
+  let charactersLength = characters.length;
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
+}
+
 // let generateOffer = async (peerConnection, CandidateDBReference) => {
 //   pendingICEDetails = [];
 //   let documents = await CandidateDBReference.collection('offers').doc('pending').collection('details').get();

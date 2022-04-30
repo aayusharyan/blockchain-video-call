@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Container, Stack, Col, Navbar } from 'react-bootstrap';
 import checkingWeb3Img from '../assets/checking_web3.png';
-import invalidChain from '../assets/invalid_chain.png';
 import ready from '../assets/ready.png';
 import gridSection from '../assets/grid_section.png';
 import metamaskLogo from '../assets/metamask.png';
@@ -12,60 +11,23 @@ import trezorLogo from '../assets/trezor.png';
 import firebaseLogo from '../assets/firebase.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMugHot, faPlus, faPhone } from '@fortawesome/free-solid-svg-icons';
-import { useWeb3React } from '@web3-react/core';
-import { LedgerObj, MetaMaskObj, WalletConnectObj, WalletLinkObj } from '../functions/Web3';
-import { LOGIN_STATE_INVALID_CHAIN, LOGIN_STATE_LOGIN_SUCCESS, LOGIN_STATE_NO_LOGIN, ROPSTEN_CHAIN_ID, ROPSTEN_CHAIN_ID_HEX, CONTRACT_ADDRESS, JOIN_STATUS_MAKING_CONNECTION, JOIN_STATUS_GENERATING_TRANSACTION, JOIN_STATUS_WAITING_FOR_MINT, JOIN_STATUS_REDIRECTING, CALL_URL_PREPEND_TEXT, WALLET_METAMASK, WALLET_WALLETCONNECT, WALLET_COINBASE, WALLET_LEDGER } from '../constants';
+import { LOGIN_STATE_LOGIN_SUCCESS, LOGIN_STATE_NO_LOGIN, JOIN_STATUS_MAKING_CONNECTION, JOIN_STATUS_GENERATING_TRANSACTION, JOIN_STATUS_WAITING_FOR_MINT, JOIN_STATUS_REDIRECTING, PEER_STATE_INITIATOR, CALL_URL_PREPEND_TEXT } from '../constants';
 import JoinCallModal from './JoinCallModal';
 import { useNavigate } from 'react-router-dom';
 import moment from 'moment';
-import contractMetadata from '../contractMetadata';
-import { ethers, Wallet } from 'ethers';
-import { useDispatch } from 'react-redux';
-import { setWallet, setWalletProvider } from '../actions';
 import JoiningCallModal from './JoiningCallModal';
-import { provider } from '../functions/Web3';
+import { useDispatch } from 'react-redux';
+import { setPeerState } from '../actions.js';
+import { makeId } from '../functions/Call';
 
 const HomeContainer = () => {
   const [loginState, setLoginState] = useState(LOGIN_STATE_NO_LOGIN);
-  const { active, activate, chainId, error, account } = useWeb3React();
   const [joinCallModalShow, setJoinCallModalShow] = useState(false);
-  const [userAccount, setUserAccount] = useState("");
-  const [secondaryUserAccount, setSecondaryUserAccount] = useState({});
   const [currentTime, setCurrentTime] = useState(Date.now());
   const [joiningCallModal, setJoiningCallModal] = useState(false);
   const [joiningCallModalStatus, setJoiningCallModalStatus] = useState(JOIN_STATUS_MAKING_CONNECTION);
-  const [connectedWalletType, setConnectedWalletType] = useState(""); 
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
-  useEffect(() => {
-    if (error !== undefined) {
-      if (error.name === "UnsupportedChainIdError") {
-        setLoginState(LOGIN_STATE_INVALID_CHAIN);
-      }
-    }
-    if (active) {
-      if (chainId === ROPSTEN_CHAIN_ID) {
-        setLoginState(LOGIN_STATE_LOGIN_SUCCESS);
-      } else {
-        setLoginState(LOGIN_STATE_INVALID_CHAIN);
-      }
-    }
-  }, [active, chainId, error]);
-
-  useEffect(() => {
-    if (account === undefined) {
-      setLoginState(LOGIN_STATE_NO_LOGIN);
-      setUserAccount("");
-      dispatch(setWallet(undefined));
-      setConnectedWalletType("");
-    } else {
-      setUserAccount(account);
-      const userWallet = new Wallet(account, provider);
-      setSecondaryUserAccount(userWallet);
-      dispatch(setWallet(userWallet));
-    }
-  }, [account, dispatch]);
 
   useEffect(() => {
     setTimeout(() => {
@@ -73,66 +35,8 @@ const HomeContainer = () => {
     }, 50 * 1000);
   }, [currentTime]);
 
-  useEffect(() => {
-    dispatch(setWalletProvider(connectedWalletType));
-  }, [connectedWalletType, dispatch])
-
-  const connectToMetamask = () => {
-    (async () => {
-      try {
-        await activate(MetaMaskObj);
-        setConnectedWalletType(WALLET_METAMASK);
-      } catch (e) {
-        console.log(e);
-      }
-    })();
-  }
-
-  const connectToWalletConnect = () => {
-    (async () => {
-      try {
-        await activate(WalletConnectObj);
-        setConnectedWalletType(WALLET_WALLETCONNECT);
-      } catch (e) {
-        console.log(e);
-      }
-    })();
-  }
-
-  const connectToWalletLink = () => {
-    (async () => {
-      try {
-        await activate(WalletLinkObj);
-        setConnectedWalletType(WALLET_COINBASE);
-      } catch (e) {
-        console.log(e);
-      }
-    })();
-  }
-
-  const connectToLedger = () => {
-    (async () => {
-      try {
-        await activate(LedgerObj);
-        setConnectedWalletType(WALLET_LEDGER);
-      } catch (e) {
-        console.log(e);
-      }
-    })();
-  }
-
-  const switchNetworkToRopsten = () => {
-    (async () => {
-      const provider = await MetaMaskObj.getProvider();
-      provider.request({
-        method: "wallet_switchEthereumChain",
-        params: [
-          {
-            chainId: ROPSTEN_CHAIN_ID_HEX,
-          },
-        ],
-      });
-    })();
+  const login = () => {
+    setLoginState(LOGIN_STATE_LOGIN_SUCCESS);
   }
 
   const joinCall = () => {
@@ -143,27 +47,22 @@ const HomeContainer = () => {
     setJoiningCallModal(true);
     (async _ => {
       try {
-
-        const contract = new ethers.Contract(CONTRACT_ADDRESS, contractMetadata.output.abi, provider);
-        const contractWithSigner = contract.connect(secondaryUserAccount);
-
         setJoiningCallModalStatus(JOIN_STATUS_GENERATING_TRANSACTION);
-
-        const gasPrice    = await provider.getFeeData();
-        const transaction = await contractWithSigner.generateCall({ gasLimit: 350000, maxFeePerGas: gasPrice.maxFeePerGas.add(gasPrice.maxFeePerGas).add(gasPrice.maxFeePerGas).add(gasPrice.maxFeePerGas), maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas.add(gasPrice.maxPriorityFeePerGas).add(gasPrice.maxPriorityFeePerGas) });
-        console.log(transaction);
         setJoiningCallModalStatus(JOIN_STATUS_WAITING_FOR_MINT);
 
-        const receipt = await transaction.wait();
+        const parts = [];
+        parts.push(CALL_URL_PREPEND_TEXT);
+        parts.push(makeId(3));
+        parts.push(makeId(3));
+        parts.push(makeId(3));
+
+
         setJoiningCallModalStatus(JOIN_STATUS_REDIRECTING);
-        let callURL = receipt?.events[0]?.args?.callURL;
-        const chunks = [CALL_URL_PREPEND_TEXT];
-        for (let i = 0; i < callURL.length; i += 3) {
-          chunks.push(callURL.substring(i, i + 3));
-        }
-        callURL = chunks.join("-");
+        dispatch(setPeerState(PEER_STATE_INITIATOR));
+
         setTimeout(() => {
-          navigate(`/call/${callURL}`);
+          const url = parts.join("-");
+          navigate(`/call/${url}`);
         }, 1500)
       } catch (e) {
         console.log(e);
@@ -178,29 +77,29 @@ const HomeContainer = () => {
           <>
             <h1>Select your Wallet</h1>
             <Stack direction='horizontal' gap={4} className='mt-5'>
-              <Button variant="outline-light" onClick={connectToMetamask} style={{ display: "inherit", verticalAlign: "middle" }}>
+              <Button variant="outline-light" style={{ display: "inherit", verticalAlign: "middle" }} disabled>
                 <h5 className='mb-0 text-dark' style={{ lineHeight: "2rem" }}>Metamask</h5> &emsp;
                 <img src={metamaskLogo} alt="" style={{ height: "2rem" }} />
               </Button>
-              <Button variant="outline-light" onClick={connectToWalletConnect} style={{ display: "inherit", verticalAlign: "middle" }}>
+              <Button variant="outline-light" style={{ display: "inherit", verticalAlign: "middle" }} disabled>
                 <h5 className='mb-0 text-dark' style={{ lineHeight: "2rem" }}>WalletConnect</h5> &emsp;
                 <img src={walletConnectLogo} alt="" style={{ height: "2rem" }} />
               </Button>
-              <Button variant="outline-light" onClick={connectToWalletLink} style={{ display: "inherit", verticalAlign: "middle" }}>
+              <Button variant="outline-light" style={{ display: "inherit", verticalAlign: "middle" }} disabled>
                 <h5 className='mb-0 text-dark' style={{ lineHeight: "2rem" }}>Coinbase</h5> &emsp;
                 <img src={coinbaseLogo} alt="" style={{ height: "2rem" }} />
               </Button>
             </Stack>
             <Stack direction='horizontal' gap={4} className='mt-5'>
-              <Button variant="outline-light" onClick={connectToLedger} style={{ display: "inherit", verticalAlign: "middle" }}>
+              <Button variant="outline-light" style={{ display: "inherit", verticalAlign: "middle" }} disabled>
                 <h5 className='mb-0 text-dark' style={{ lineHeight: "2rem" }}>Ledger</h5> &emsp;
                 <img src={ledgerLogo} alt="" style={{ height: "2rem" }} />
               </Button>
-              <Button variant="outline-light" style={{ display: "inherit", verticalAlign: "middle" }}>
+              <Button variant="outline-light" style={{ display: "inherit", verticalAlign: "middle" }} disabled>
                 <h5 className='mb-0 text-dark' style={{ lineHeight: "2rem" }}>Trezor</h5> &emsp;
                 <img src={trezorLogo} alt="" style={{ height: "2rem" }} />
               </Button>
-              <Button variant="outline-light" style={{ display: "inherit", verticalAlign: "middle" }}>
+              <Button variant="outline-light" onClick={login} style={{ display: "inherit", verticalAlign: "middle" }}>
                 <h5 className='mb-0 text-dark' style={{ lineHeight: "2rem" }}>Firebase</h5> &emsp;
                 <img src={firebaseLogo} alt="" style={{ height: "2rem" }} />
               </Button>
@@ -210,27 +109,12 @@ const HomeContainer = () => {
       case LOGIN_STATE_LOGIN_SUCCESS:
         return (
           <>
-            <h1>Welcome, {userAccount.substring(0, 5)} ··· {userAccount.substring(userAccount.length - 6, userAccount.length)}</h1>
+            <h1>Welcome, ··· </h1>
             <h4 className='mb-5'>Have peace of mind, it's secure.</h4>
             <h3>It's <strong className='display-6'>{getCurrentTime()}</strong> currently.</h3>
             <Stack direction='horizontal' gap={4} className='mt-5'>
               <Button variant="primary" onClick={newCall}>New Call &emsp; <FontAwesomeIcon icon={faPlus} /></Button>
               <Button variant="primary" onClick={joinCall}>Join Call &emsp; <FontAwesomeIcon icon={faPhone} /></Button>
-            </Stack>
-          </>
-        );
-      case LOGIN_STATE_INVALID_CHAIN:
-        return (
-          <>
-            <h1>Good... One last step</h1>
-            <h2 className='pb-5'>We need Ropsten Chain to work</h2>
-            <Stack direction='horizontal' gap={4} className='mt-5'>
-              {connectedWalletType === WALLET_METAMASK ? (
-                <Button variant="outline-primary" onClick={switchNetworkToRopsten}>Switch Network</Button>
-              ) : (
-                <h5>Please change in the app.</h5>
-              )}
-              
             </Stack>
           </>
         );
@@ -254,14 +138,6 @@ const HomeContainer = () => {
           <>
             <div style={{ backgroundColor: "#FFFFFF", borderRadius: "50%", width: "30rem", height: "30rem", boxShadow: "0px 0px 20px white", float: "right" }}>
               <img src={ready} style={{ width: "30rem", position: "relative", bottom: "3rem", zIndex: "2001", animation: "MoveUpDown 4s linear infinite", willChange: "bottom" }} alt="" />
-            </div>
-          </>
-        );
-      case LOGIN_STATE_INVALID_CHAIN:
-        return (
-          <>
-            <div style={{ backgroundColor: "#FFFFFF", borderRadius: "50%", width: "30rem", height: "30rem", boxShadow: "0px 0px 20px white", float: "right" }}>
-              <img src={invalidChain} style={{ width: "30rem", position: "relative", borderBottomLeftRadius: "15rem", borderBottomRightRadius: "15rem", zIndex: "2001" }} alt="" />
             </div>
           </>
         );
