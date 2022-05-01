@@ -41,6 +41,10 @@ const CallContainer = () => {
       setLocalStream(localStream);
       setRemoteStream(remoteStream);
 
+      localStream.getTracks().forEach((track) => {
+        peerConnection.addTrack(track, localStream);
+      })
+
       peerConnection.ontrack = event => {
         event.streams[0].getTracks().forEach(track => {
             remoteStream.addTrack(track);
@@ -67,7 +71,6 @@ const CallContainer = () => {
 
         // Get candidates for caller, save to db
         peerConnection.onicecandidate = event => {
-          alert("SHOULD WRITE OFFER");
           if(event.candidate) {
             (async (event) => {
               await addDoc(offerCandidates, event.candidate.toJSON());
@@ -99,7 +102,6 @@ const CallContainer = () => {
         const answerCandidates  = collection(callDoc, 'answerCandidates');
 
         peerConnection.onicecandidate = event => {
-          alert("SHOULD WRITE ANSWER");
           if(event.candidate) {
             (async (event) => {
               await addDoc(answerCandidates, event.candidate.toJSON());
