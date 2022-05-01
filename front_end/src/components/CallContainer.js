@@ -22,20 +22,19 @@ const CallContainer = () => {
   const dispatch = useDispatch();
   const peerState = useSelector((state) => state.peerState);
   const { callURL } = useParams();
+  const [PCState, setPCState] = useState(0);
 
   useEffect(() => {
-    (async () => {
+    const fn = async () => {
+      setPCState(1);
       setAlertDetails({
         variant: "warning",
         text: "Joining Call..."
       });
 
-      if (peerConnection === undefined) {
-        const newPeerConnection = getNewPeerConnection();
-        dispatch(setPeerConnection(newPeerConnection));
-        return;
-      }
-
+      const peerConnection = getNewPeerConnection();
+      dispatch(setPeerConnection(peerConnection));
+      
       const localStream  = await getMediaStream();
       const remoteStream = new MediaStream();
       setLocalStream(localStream);
@@ -43,7 +42,7 @@ const CallContainer = () => {
 
       localStream.getTracks().forEach((track) => {
         peerConnection.addTrack(track, localStream);
-      })
+      });
 
       peerConnection.ontrack = event => {
         event.streams[0].getTracks().forEach(track => {
@@ -73,7 +72,11 @@ const CallContainer = () => {
         peerConnection.onicecandidate = event => {
           if(event.candidate) {
             (async (event) => {
-              await addDoc(offerCandidates, event.candidate.toJSON());
+              console.log("WILL WRITE!!!!!");
+              console.log(event.candidate.toJSON());
+              const newDoc = await addDoc(offerCandidates, event.candidate.toJSON());
+              console.log(newDoc.id);
+              console.log("667");
             })(event);
           }
         };
@@ -154,8 +157,13 @@ const CallContainer = () => {
       }, (1000));
 
       console.log(peerConnection);
-    })();
-  }, [peerConnection, peerState, dispatch, callURL]);
+    }
+
+    if(PCState !== 1) {
+      console.log(PCState);
+      fn();
+    }
+  }, [peerConnection, peerState, dispatch, callURL, PCState]);
 
   const toggleChatVisibility = () => {
     setChatVisible(chatVisibility => !chatVisibility);
