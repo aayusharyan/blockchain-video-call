@@ -2,11 +2,16 @@ import React, { useRef, useEffect, useState } from 'react'
 import { Modal, Button, InputGroup, Form } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { CALL_URL_PREPEND_TEXT } from '../constants';
+import { useDispatch } from 'react-redux';
+import { setPeerState } from '../actions';
+import { PEER_STATE_JOINEE } from '../constants';
 
 const JoinCallModal = (props) => {
   const inputRef = useRef(null);
   const [validated, setValidated] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
   useEffect(() => {
     if (inputRef.current !== null) {
       inputRef.current.focus();
@@ -17,6 +22,7 @@ const JoinCallModal = (props) => {
     e.preventDefault();
     let callURL = inputRef.current.value; 
     if(callURL.length === 11) {
+      dispatch(setPeerState(PEER_STATE_JOINEE));
       callURL = `${CALL_URL_PREPEND_TEXT}-${callURL}`;
       navigate(`/call/${callURL}`);
     } else {

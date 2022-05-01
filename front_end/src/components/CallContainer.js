@@ -45,6 +45,8 @@ const CallContainer = () => {
       });
 
       peerConnection.ontrack = event => {
+        console.log("Streams found");
+        console.log(event.streams);
         event.streams[0].getTracks().forEach(track => {
             remoteStream.addTrack(track);
         });
