@@ -37,32 +37,24 @@ const CallContainer = () => {
       
       const localStream  = await getMediaStream();
       const remoteStream = new MediaStream();
-      setLocalStream(localStream);
-      setRemoteStream(remoteStream);
-
-      localStream.getTracks().forEach((track) => {
-        peerConnection.addTrack(track, localStream);
-      });
 
       peerConnection.ontrack = event => {
         console.log("Streams found");
         console.log(event.streams);
         event.streams[0].getTracks().forEach(track => {
+          console.log(track);
             remoteStream.addTrack(track);
         });
+        const newStream = remoteStream.clone();
+        setRemoteStream(newStream);
       };
 
-      if(peerState === PEER_STATE_INITIATOR) {
-        // Create offer
-        const offerDescription = await peerConnection.createOffer();
-        await peerConnection.setLocalDescription(offerDescription);
-      
-        const offer = {
-          sdp: offerDescription.sdp,
-          type: offerDescription.type,
-        };
+      alert(peerState);
+
+      if(peerState === PEER_STATE_INITIATOR || undefined) {
         
-        await setDoc(doc(firestoreDB, "calls", callURL), { offer });
+
+        await setDoc(doc(firestoreDB, "calls", callURL), { });
         const callDoc = doc(firestoreDB, "calls", callURL);
 
         const offerCandidates   = collection(callDoc, 'offerCandidates');
@@ -74,14 +66,27 @@ const CallContainer = () => {
         peerConnection.onicecandidate = event => {
           if(event.candidate) {
             (async (event) => {
-              console.log("WILL WRITE!!!!!");
-              console.log(event.candidate.toJSON());
-              const newDoc = await addDoc(offerCandidates, event.candidate.toJSON());
-              console.log(newDoc.id);
-              console.log("667");
+              await addDoc(offerCandidates, event.candidate.toJSON());
             })(event);
           }
         };
+
+        localStream.getTracks().forEach((track) => {
+          peerConnection.addTrack(track, localStream);
+        });
+        
+        // Create offer
+        const offerDescription = await peerConnection.createOffer();
+        await peerConnection.setLocalDescription(offerDescription);
+      
+        const offer = {
+          sdp: offerDescription.sdp,
+          type: offerDescription.type,
+        };
+
+        await updateDoc(doc(firestoreDB, "calls", callURL), { offer });
+        
+        
       
         // Listen for remote answer
         onSnapshot(callDoc, (snapshot) => {
@@ -113,6 +118,10 @@ const CallContainer = () => {
             })(event);
           }
         };
+
+        localStream.getTracks().forEach((track) => {
+          peerConnection.addTrack(track, localStream);
+        });
       
         // Fetch data, then set the offer & answer
       
@@ -148,6 +157,9 @@ const CallContainer = () => {
       // if(peerConnection.signalingState === "stable") {
       //   return;
       // }
+
+      setLocalStream(localStream);
+      setRemoteStream(remoteStream);
 
       setAlertDetails({
         variant: "success",

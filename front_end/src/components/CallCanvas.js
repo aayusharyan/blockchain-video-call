@@ -10,12 +10,15 @@ const CallCanvas = (props) => {
 
   useEffect(() => {
     if (props.remoteMediaStream.id !== undefined) {
+      console.log("RE-RUN");
+      console.log(props.remoteMediaStream.getTracks());
       primaryVideoRef.current.srcObject = props.remoteMediaStream;
     }
   }, [props.remoteMediaStream]);
 
   useEffect(() => {
     if (props.localMediaStream.id !== undefined) {
+      console.log("LOCAL", props.localMediaStream.getTracks());
       secondaryVideoRef.current.srcObject = props.localMediaStream;
     }
   }, [props.localMediaStream]);
