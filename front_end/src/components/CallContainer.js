@@ -7,7 +7,6 @@ import ChatContainer from './ChatContainer';
 import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { getNewPeerConnection } from '../functions/Call';
-import { setPeerConnection } from '../actions';
 import { PEER_STATE_INITIATOR } from '../constants';
 import { firestoreDB } from '../firebase';
 import { collection, getDoc, setDoc, addDoc, updateDoc, doc, onSnapshot } from 'firebase/firestore';
@@ -18,7 +17,7 @@ const CallContainer = () => {
   const [alertDetails, setAlertDetails] = useState({});
   const [localStream, setLocalStream] = useState({});
   const [remoteStream, setRemoteStream] = useState({});
-  const peerConnection = useSelector((state) => state.peerConnection);
+  const [peerConnection, setPeerConnection] = useState({});
   const dispatch = useDispatch();
   const peerState = useSelector((state) => state.peerState);
   const { callURL } = useParams();
@@ -33,7 +32,7 @@ const CallContainer = () => {
       });
 
       const peerConnection = getNewPeerConnection();
-      dispatch(setPeerConnection(peerConnection));
+      setPeerConnection(peerConnection);
       
       const localStream  = await getMediaStream();
       const remoteStream = new MediaStream();
@@ -47,6 +46,7 @@ const CallContainer = () => {
         });
         const newStream = remoteStream.clone();
         setRemoteStream(newStream);
+        console.log(peerConnection);
       };
 
       alert(peerState);
@@ -177,7 +177,7 @@ const CallContainer = () => {
       console.log(PCState);
       fn();
     }
-  }, [peerConnection, peerState, dispatch, callURL, PCState]);
+  }, [peerState, dispatch, callURL, PCState]);
 
   const toggleChatVisibility = () => {
     setChatVisible(chatVisibility => !chatVisibility);

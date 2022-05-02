@@ -58,7 +58,7 @@ const CallCanvas = (props) => {
             <Stack style={{ position: "absolute", top: "0px", left: "0px", width: "100%", height: "100%", transition: "all 0.25s", opacity: "0", background: "rgba(0,0,0,0)" }} className="justify-content-center swapIconContainer" onClick={swapVideoFeeds}>
               <span ref={videoSwapIconRef} style={{ transition: "all 0.25s", transitionDelay: "0.25s" }}><FontAwesomeIcon icon={faArrowsRotate} className="fs-1 text-light" /></span>
             </Stack>
-            <video muted ref={secondaryVideoRef} onLoadedMetadata={metadataLoaded} style={{ transition: "all 0.5s" }} />
+            <video muted ref={secondaryVideoRef} onLoadedMetadata={metadataLoaded} style={{ transition: "all 0.5s", width: "100%" }} />
           </div>
         </Container>
       </Container>

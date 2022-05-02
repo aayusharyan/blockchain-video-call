@@ -46,6 +46,39 @@ const CallBottomNav = (props) => {
     currentVideoTrack.stop();
     props.mediaStream.removeTrack(currentVideoTrack);
     setVideoInSrc(deviceId);
+    
+    var sender = props.peerConnection.getSenders().find(function (s) {
+      return s.track.kind == newVideoTrack.kind;
+    });
+
+    console.log('found sender:', sender);
+    sender.replaceTrack(newVideoTrack);
+  }
+
+  const shareScreen = async() => {
+    let tempStream = null;
+    let options = { video: { cursor: "always" }, }
+  
+    try {
+      tempStream = await navigator.mediaDevices.getDisplayMedia(options);
+    } catch (err) {
+      console.error("Error: " + err);
+      return;
+    }
+  
+    let currentVideoTrack = props.mediaStream.getVideoTracks()[0];
+    let newVideoTrack = tempStream.getVideoTracks()[0];
+  
+    props.mediaStream.addTrack(newVideoTrack);
+    currentVideoTrack.stop();
+    props.mediaStream.removeTrack(currentVideoTrack);
+    
+    var sender = props.peerConnection.getSenders().find(function (s) {
+      return s.track.kind == newVideoTrack.kind;
+    });
+
+    console.log('found sender:', sender);
+    sender.replaceTrack(newVideoTrack);
   }
 
   const endCall = () => {
@@ -126,7 +159,7 @@ const CallBottomNav = (props) => {
             <Button className="ms-auto" onClick={fullScreen}>
               <FontAwesomeIcon icon={faUpRightAndDownLeftFromCenter} />
             </Button>
-            <Button>
+            <Button onClick={shareScreen}>
               <FontAwesomeIcon icon={faShareFromSquare} />
             </Button>
             <Button variant={(props.chatVisibility ? 'outline-primary' : '')} onClick={props.toggleChatVisibility}>
